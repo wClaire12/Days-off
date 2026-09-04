@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f5f5f7">
+<title>我的调休</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  margin:0;
+  background:#f5f5f7;
+  color:#111;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;
+}
+
+.container{
+  max-width:680px;
+  margin:0 auto;
+  padding:24px 16px 60px;
+}
+
+.header{
+  margin-bottom:18px;
+}
+
+.header h1{
+  margin:0;
+  font-size:26px;
+  font-weight:750;
+}
+
+.header p{
+  margin:5px 0 0;
+  color:#8e8e93;
+  font-size:13px;
+}
+
+.card{
+  background:#fff;
+  border-radius:22px;
+  padding:20px;
+  margin-bottom:14px;
+  box-shadow:0 1px 3px rgba(0,0,0,.035);
+}
+
+.balance-label{
+  color:#8e8e93;
+  font-size:14px;
+}
+
+.balance{
+  margin-top:7px;
+  font-size:48px;
+  font-weight:780;
+  letter-spacing:-1.5px;
+}
+
+.balance span{
+  font-size:18px;
+  color:#8e8e93;
+  font-weight:600;
+}
+
+.balance-days{
+  margin-top:3px;
+  font-size:14px;
+  color:#8e8e93;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:20px;
+}
+
+.stat{
+  background:#f7f7f8;
+  border-radius:15px;
+  padding:14px;
+}
+
+.stat .title{
+  color:#8e8e93;
+  font-size:12px;
+}
+
+.stat .number{
+  margin-top:5px;
+  font-size:21px;
+  font-weight:700;
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:14px;
+}
+
+button{
+  border:none;
+  border-radius:15px;
+  padding:15px;
+  font-size:16px;
+  font-weight:700;
+  font-family:inherit;
+  cursor:pointer;
+}
+
+.btn-dark{
+  background:#111;
+  color:#fff;
+}
+
+.btn-light{
+  background:#e9e9ed;
+  color:#111;
+}
+
+.btn-small{
+  padding:9px 11px;
+  font-size:13px;
+  background:#f2f2f4;
+  color:#333;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:16px;
+  font-weight:700;
+  margin-bottom:12px;
+}
+
+.month-stat{
+  color:#8e8e93;
+  font-size:12px;
+  font-weight:500;
+}
+
+.form-card{
+  display:none;
+}
+
+.form-card.show{
+  display:block;
+}
+
+.form-title{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:16px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.field{
+  margin-bottom:12px;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+label{
+  display:block;
+  color:#8e8e93;
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+input{
+  width:100%;
+  border:1px solid #ddd;
+  background:#fff;
+  border-radius:12px;
+  padding:13px 12px;
+  font-size:16px;
+  font-family:inherit;
+  outline:none;
+}
+
+input:focus{
+  border-color:#aaa;
+}
+
+.form-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:4px;
+}
+
+.record{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:15px 0;
+  border-bottom:1px solid #eee;
+}
+
+.record:last-child{
+  border-bottom:none;
+}
+
+.record-left{
+  min-width:0;
+}
+
+.record-type{
+  font-size:15px;
+  font-weight:700;
+}
+
+.record-meta{
+  margin-top:4px;
+  font-size:12px;
+  color:#8e8e93;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:220px;
+}
+
+.record-right{
+  text-align:right;
+}
+
+.amount{
+  font-size:17px;
+  font-weight:750;
+}
+
+.plus{
+  color:#087a55;
+}
+
+.minus{
+  color:#c23b35;
+}
+
+.record-buttons{
+  display:flex;
+  gap:5px;
+  justify-content:flex-end;
+  margin-top:5px;
+}
+
+.mini{
+  border:none;
+  background:none;
+  padding:2px 4px;
+  font-size:11px;
+  font-weight:500;
+  color:#8e8e93;
+}
+
+.empty{
+  color:#8e8e93;
+  font-size:14px;
+  padding:12px 0;
+}
+
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:14px;
+}
+
+.note{
+  color:#9a9aa0;
+  font-size:11px;
+  line-height:1.6;
+  margin-top:12px;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.28);
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  z-index:100;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.sheet{
+  background:#fff;
+  width:100%;
+  max-width:680px;
+  border-radius:24px 24px 0 0;
+  padding:22px 16px calc(22px + env(safe-area-inset-bottom));
+}
+
+.sheet-title{
+  font-size:19px;
+  font-weight:700;
+  margin-bottom:14px;
+}
+
+@media (min-width:700px){
+  .modal{
+    align-items:center;
+    padding:20px;
+  }
+
+  .sheet{
+    max-width:520px;
+    border-radius:24px;
+    padding:24px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>我的调休</h1>
+    <p>个人加班与调休余额记录</p>
+  </div>
+
+  <div class="card">
+    <div class="balance-label">当前剩余调休</div>
+
+    <div class="balance">
+      <span id="balanceNumber">0</span>
+      <span>小时</span>
+    </div>
+
+    <div class="balance-days" id="balanceDays">
+      0天 0小时
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="title">累计加班</div>
+        <div class="number" id="earned">0 h</div>
+      </div>
+
+      <div class="stat">
+        <div class="title">累计调休</div>
+        <div class="number" id="used">0 h</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-dark" id="addOvertime">
+      ＋ 记录加班
+    </button>
+
+    <button class="btn-light" id="addLeave">
+      － 记录调休
+    </button>
+  </div>
+
+  <div class="card form-card" id="entryForm">
+
+    <div class="form-title" id="formTitle">
+      记录加班
+    </div>
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>日期</label>
+        <input type="date" id="dateInput">
+      </div>
+
+      <div class="field">
+        <label>时长（小时）</label>
+        <input
+          type="number"
+          id="hoursInput"
+          min="0.25"
+          step="0.25"
+          inputmode="decimal"
+          placeholder="例如 2"
+        >
+      </div>
+
+      <div class="field full">
+        <label>备注（可选）</label>
+        <input
+          type="text"
+          id="noteInput"
+          maxlength="80"
+          placeholder="例如：晚上加班 / 下午调休"
+        >
+      </div>
+
+    </div>
+
+    <div class="form-actions">
+
+      <button class="btn-light" id="cancelEntry">
+        取消
+      </button>
+
+      <button class="btn-dark" id="saveEntry">
+        保存
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="section-title">
+      <span>本月统计</span>
+      <span class="month-stat" id="monthText"></span>
+    </div>
+
+    <div class="stats">
+
+      <div class="stat">
+        <div class="title">本月加班</div>
+        <div class="number" id="monthEarned">0 h</div>
+      </div>
+
+      <div class="stat">
+        <div class="title">本月调休</div>
+        <div class="number" id="monthUsed">0 h</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="section-title">
+      <span>最近记录</span>
+    </div>
+
+    <div id="records"></div>
+
+    <div class="toolbar">
+
+      <button class="btn-small" id="setInitial">
+        设置初始余额
+      </button>
+
+      <button class="btn-small" id="exportData">
+        导出备份
+      </button>
+
+      <button class="btn-small" id="importData">
+        导入备份
+      </button>
+
+    </div>
+
+    <div class="note">
+      数据默认只保存在当前浏览器中，不会上传到服务器。
+      如果更换手机或清理浏览器数据，建议提前导出备份。
+    </div>
+
+  </div>
+
+</div>
+
+<div class="modal" id="editModal">
+
+  <div class="sheet">
+
+    <div class="sheet-title">
+      编辑记录
+    </div>
+
+    <div class="field">
+      <label>日期</label>
+      <input type="date" id="editDate">
+    </div>
+
+    <div class="field">
+      <label>时长（小时）</label>
+      <input
+        type="number"
+        id="editHours"
+        min="0.25"
+        step="0.25"
+      >
+    </div>
+
+    <div class="field">
+      <label>备注</label>
+      <input type="text" id="editNote">
+    </div>
+
+    <div class="form-actions">
+
+      <button class="btn-light" id="cancelEdit">
+        取消
+      </button>
+
+      <button class="btn-dark" id="saveEdit">
+        保存修改
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<input
+  type="file"
+  id="fileInput"
+  accept=".json,application/json"
+  hidden
+>
+
+<script>
+
+const RECORD_KEY = "my_timeoff_records_v1";
+const INITIAL_KEY = "my_timeoff_initial_v1";
+
+let currentType = "加班";
+let editingId = null;
+
+const $ = id => document.getElementById(id);
+
+function loadRecords(){
+  try{
+    return JSON.parse(localStorage.getItem(RECORD_KEY) || "[]");
+  }catch(e){
+    return [];
+  }
+}
+
+function saveRecords(data){
+  localStorage.setItem(RECORD_KEY, JSON.stringify(data));
+}
+
+function getInitial(){
+  return Number(localStorage.getItem(INITIAL_KEY) || 0);
+}
+
+function formatNumber(n){
+  n = Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+  return Number.isInteger(n) ? String(n) : String(n);
+}
+
+function escapeHtml(text){
+  return String(text || "").replace(/[&<>"']/g, function(m){
+    return {
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
+    }[m];
+  });
+}
+
+function hoursToDays(hours){
+
+  const negative = hours < 0;
+
+  hours = Math.abs(hours);
+
+  const days = Math.floor(hours / 8);
+
+  const rest = Math.round((hours % 8) * 100) / 100;
+
+  return (negative ? "-" : "") + days + "天 " + formatNumber(rest) + "小时";
+}
+
+function render(){
+
+  const data = loadRecords();
+
+  let earned = 0;
+  let used = 0;
+
+  data.forEach(item => {
+
+    if(item.type === "加班"){
+      earned += Number(item.hours);
+    }
+
+    if(item.type === "调休"){
+      used += Number(item.hours);
+    }
+
+  });
+
+  const balance = getInitial() + earned - used;
+
+  $("balanceNumber").textContent = formatNumber(balance);
+  $("balanceDays").textContent = "≈ " + hoursToDays(balance);
+
+  $("earned").textContent = formatNumber(earned) + " h";
+  $("used").textContent = formatNumber(used) + " h";
+
+  renderMonthly(data);
+  renderRecords(data);
+}
+
+function renderMonthly(data){
+
+  const now = new Date();
+
+  const year = now.getFullYear();
+
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+
+  const prefix = year + "-" + month;
+
+  let monthEarned = 0;
+  let monthUsed = 0;
+
+  data.forEach(item => {
+
+    if(item.date && item.date.startsWith(prefix)){
+
+      if(item.type === "加班"){
+        monthEarned += Number(item.hours);
+      }
+
+      if(item.type === "调休"){
+        monthUsed += Number(item.hours);
+      }
+
+    }
+
+  });
+
+  $("monthText").textContent =
+    year + "年" + Number(month) + "月";
+
+  $("monthEarned").textContent =
+    formatNumber(monthEarned) + " h";
+
+  $("monthUsed").textContent =
+    formatNumber(monthUsed) + " h";
+}
+
+function renderRecords(data){
+
+  const box = $("records");
+
+  if(!data.length){
+
+    box.innerHTML =
+      '<div class="empty">还没有记录，点上方按钮开始。</div>';
+
+    return;
+  }
+
+  const sorted = [...data].sort((a,b) => {
+
+    const aKey = (a.date || "") + (a.created || "");
+    const bKey = (b.date || "") + (b.created || "");
+
+    return bKey.localeCompare(aKey);
+
+  });
+
+  box.innerHTML = sorted.map(item => {
+
+    const sign = item.type === "加班" ? "+" : "-";
+
+    const colorClass =
+      item.type === "加班" ? "plus" : "minus";
+
+    return `
+      <div class="record">
+
+        <div class="record-left">
+
+          <div class="record-type">
+            ${escapeHtml(item.type)}
+          </div>
+
+          <div class="record-meta">
+            ${escapeHtml(item.date)}
+            ${item.note ? " · " + escapeHtml(item.note) : ""}
+          </div>
+
+        </div>
+
+        <div class="record-right">
+
+          <div class="amount ${colorClass}">
+            ${sign}${formatNumber(item.hours)}h
+          </div>
+
+          <div class="record-buttons">
+
+            <button
+              class="mini"
+              onclick="openEdit('${item.id}')"
+            >
+              编辑
+            </button>
+
+            <button
+              class="mini"
+              onclick="deleteRecord('${item.id}')"
+            >
+              删除
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
+  }).join("");
+}
+
+function openEntry(type){
+
+  currentType = type;
+
+  $("formTitle").textContent = "记录" + type;
+
+  $("entryForm").classList.add("show");
+
+  const now = new Date();
+
+  const y = now.getFullYear();
+
+  const m =
+    String(now.getMonth()+1).padStart(2,"0");
+
+  const d =
+    String(now.getDate()).padStart(2,"0");
+
+  $("dateInput").value =
+    y + "-" + m + "-" + d;
+
+  $("hoursInput").value = "";
+
+  $("noteInput").value = "";
+
+  setTimeout(() => {
+    $("hoursInput").focus();
+  }, 100);
+}
+
+function saveEntry(){
+
+  const date =
+    $("dateInput").value;
+
+  const hours =
+    Number($("hoursInput").value);
+
+  const note =
+    $("noteInput").value.trim();
+
+  if(!date || !(hours > 0)){
+
+    alert("请填写日期和有效时长");
+
+    return;
+  }
+
+  const data = loadRecords();
+
+  data.push({
+
+    id:
+      Date.now().toString() +
+      Math.random().toString(16).slice(2),
+
+    type: currentType,
+
+    date,
+
+    hours,
+
+    note,
+
+    created:
+      new Date().toISOString()
+
+  });
+
+  saveRecords(data);
+
+  $("entryForm").classList.remove("show");
+
+  render();
+}
+
+function deleteRecord(id){
+
+  if(!confirm("确定删除这条记录吗？")){
+    return;
+  }
+
+  const data =
+    loadRecords().filter(item => item.id !== id);
+
+  saveRecords(data);
+
+  render();
+}
+
+function openEdit(id){
+
+  const data = loadRecords();
+
+  const item =
+    data.find(x => x.id === id);
+
+  if(!item){
+    return;
+  }
+
+  editingId = id;
+
+  $("editDate").value =
+    item.date;
+
+  $("editHours").value =
+    item.hours;
+
+  $("editNote").value =
+    item.note || "";
+
+  $("editModal").classList.add("show");
+}
+
+function saveEdit(){
+
+  const date =
+    $("editDate").value;
+
+  const hours =
+    Number($("editHours").value);
+
+  const note =
+    $("editNote").value.trim();
+
+  if(!date || !(hours > 0)){
+
+    alert("请输入有效信息");
+
+    return;
+  }
+
+  const data = loadRecords();
+
+  const index =
+    data.findIndex(x => x.id === editingId);
+
+  if(index === -1){
+    return;
+  }
+
+  data[index].date = date;
+  data[index].hours = hours;
+  data[index].note = note;
+
+  saveRecords(data);
+
+  $("editModal").classList.remove("show");
+
+  editingId = null;
+
+  render();
+}
+
+function setInitialBalance(){
+
+  const value = prompt(
+    "请输入你目前已有的调休余额（小时）",
+    formatNumber(getInitial())
+  );
+
+  if(value === null){
+    return;
+  }
+
+  const number =
+    Number(value);
+
+  if(Number.isNaN(number)){
+
+    alert("请输入数字");
+
+    return;
+  }
+
+  localStorage.setItem(
+    INITIAL_KEY,
+    String(number)
+  );
+
+  render();
+}
+
+function exportData(){
+
+  const payload = {
+
+    version:1,
+
+    initial:getInitial(),
+
+    records:loadRecords(),
+
+    exportedAt:
+      new Date().toISOString()
+
+  };
+
+  const blob =
+    new Blob(
+      [JSON.stringify(payload,null,2)],
+      {type:"application/json"}
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const link =
+    document.createElement("a");
+
+  link.href = url;
+
+  link.download =
+    "我的调休备份.json";
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  link.remove();
+
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  },500);
+}
+
+function importData(){
+
+  $("fileInput").click();
+}
+
+$("fileInput").addEventListener(
+  "change",
+  function(e){
+
+    const file =
+      e.target.files[0];
+
+    if(!file){
+      return;
+    }
+
+    const reader =
+      new FileReader();
+
+    reader.onload =
+      function(){
+
+        try{
+
+          const data =
+            JSON.parse(reader.result);
+
+          if(!Array.isArray(data.records)){
+            throw new Error();
+          }
+
+          localStorage.setItem(
+            INITIAL_KEY,
+            String(Number(data.initial || 0))
+          );
+
+          saveRecords(data.records);
+
+          render();
+
+          alert("导入成功");
+
+        }catch(err){
+
+          alert("备份文件格式不正确");
+
+        }
+
+      };
+
+    reader.readAsText(file);
+
+  }
+);
+
+$("addOvertime").addEventListener(
+  "click",
+  () => openEntry("加班")
+);
+
+$("addLeave").addEventListener(
+  "click",
+  () => openEntry("调休")
+);
+
+$("cancelEntry").addEventListener(
+  "click",
+  () => {
+    $("entryForm").classList.remove("show");
+  }
+);
+
+$("saveEntry").addEventListener(
+  "click",
+  saveEntry
+);
+
+$("setInitial").addEventListener(
+  "click",
+  setInitialBalance
+);
+
+$("exportData").addEventListener(
+  "click",
+  exportData
+);
+
+$("importData").addEventListener(
+  "click",
+  importData
+);
+
+$("cancelEdit").addEventListener(
+  "click",
+  () => {
+
+    $("editModal").classList.remove("show");
+
+    editingId = null;
+
+  }
+);
+
+$("saveEdit").addEventListener(
+  "click",
+  saveEdit
+);
+
+$("editModal").addEventListener(
+  "click",
+  function(e){
+
+    if(e.target === $("editModal")){
+
+      $("editModal").classList.remove("show");
+
+      editingId = null;
+
+    }
+
+  }
+);
+
+render();
+
+</script>
+
+</body>
+</html>
