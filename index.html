@@ -1585,13 +1585,22 @@ $("migrateBtn").onclick=async()=>{
 
 
 /* ======================================================
-   钉钉批量截图识别
+   钉钉批量截图识别 V2
+   容错版：
+   1. 不依赖“提交的加班”等完整中文标题
+   2. 优先读取时长
+   3. 时长失败时用开始/结束时间计算
+   4. 支持一张截图多条记录
+   5. 显示识别失败图片和 OCR 原文
 ====================================================== */
+
+let failedScreenshots=[];
 
 $("openImport").onclick=()=>{
 
  importItems=[];
  ignoredCount=0;
+ failedScreenshots=[];
 
  $("imageInput").value="";
 
@@ -1613,11 +1622,15 @@ $("closeImport").onclick=()=>{
 };
 
 
-/* ---------- 文本标准化 ---------- */
+/* =========================
+   OCR 文本清洗
+========================= */
 
 function normalizeOCR(text){
 
  return String(text||"")
+
+ .replace(/\r/g,"\n")
 
  .replace(/：/g,":")
 
@@ -1625,30 +1638,78 @@ function normalizeOCR(text){
 
  .replace(/[．。]/g,".")
 
- .replace(/\r/g,"\n")
+ /* 常见 OCR 错误 */
+ .replace(/审\s*批\s*通\s*过/g,"审批通过")
 
- .replace(/[ \t]+/g," ");
+ .replace(/审\s*批\s*拒\s*绝/g,"审批拒绝")
+
+ .replace(/时\s*长/g,"时长")
+
+ .replace(/开\s*始\s*时\s*间/g,"开始时间")
+
+ .replace(/结\s*束\s*时\s*间/g,"结束时间")
+
+ .replace(/请\s*假\s*类\s*型/g,"请假类型")
+
+ .replace(/调\s*休/g,"调休")
+
+ .replace(/加\s*班/g,"加班")
+
+ .replace(/[ \t]+/g," ")
+
+ .replace(/\n{3,}/g,"\n\n");
 
 }
 
 
-/* ---------- 日期 ---------- */
+/* =========================
+   日期工具
+========================= */
+
+function normalizeDateParts(y,m,d){
+
+ return (
+  String(y)+"-"+
+  String(Number(m)).padStart(2,"0")+"-"+
+  String(Number(d)).padStart(2,"0")
+ );
+
+}
+
 
 function extractDate(text){
 
+ /* 优先：开始时间 */
+
  let m=text.match(
+  /开始时间[^\d]{0,10}(20\d{2})[\-\/.年](\d{1,2})[\-\/.月](\d{1,2})/
+ );
+
+ if(m){
+
+  return normalizeDateParts(
+   m[1],m[2],m[3]
+  );
+
+ }
+
+
+ /* 普通完整日期 */
+
+ m=text.match(
   /(20\d{2})[\-\/.年](\d{1,2})[\-\/.月](\d{1,2})/
  );
 
  if(m){
 
-  return (
-   m[1]+"-"+
-   String(Number(m[2])).padStart(2,"0")+"-"+
-   String(Number(m[3])).padStart(2,"0")
+  return normalizeDateParts(
+   m[1],m[2],m[3]
   );
 
  }
+
+
+ /* 相对日期兜底 */
 
  if(/前天/.test(text))
   return relativeDate(2);
@@ -1659,35 +1720,66 @@ function extractDate(text){
  if(/今天/.test(text))
   return today();
 
+
  return "";
 
 }
 
 
-/* ---------- 时长 ---------- */
+/* =========================
+   时长直接读取
+========================= */
 
-function extractHours(text){
+function extractHoursDirect(text){
+
+ /*
+   兼容：
+   时长:1.5
+   时长 1.5
+   时 长：1.5
+   时长:l.5
+   时长:I.5
+   时长:8小时
+ */
+
+ const cleaned=text
+
+ .replace(/([0-9])[,，]([0-9])/g,"$1.$2")
+
+ .replace(
+  /(时长[^0-9]{0,8})[lI]([.,]?\d*)/gi,
+  "$11$2"
+ );
+
 
  const patterns=[
 
-  /时\s*长\s*[:：]?\s*(\d+(?:\.\d+)?)/i,
+  /时长\s*[:：]?\s*(\d+(?:\.\d+)?)/i,
 
-  /时\s*长[^\d]{0,5}(\d+(?:\.\d+)?)/i,
+  /时长[^\d]{0,10}(\d+(?:\.\d+)?)/i,
 
   /(\d+(?:\.\d+)?)\s*小时/i
 
  ];
 
- for(const p of patterns){
 
-  const m=text.match(p);
+ for(const pattern of patterns){
+
+  const m=cleaned.match(pattern);
 
   if(m){
 
    const n=Number(m[1]);
 
-   if(n>0 && n<=100)
+   if(
+    Number.isFinite(n) &&
+    n>0 &&
+    n<=48
+   ){
+
     return n;
+
+   }
 
   }
 
@@ -1698,221 +1790,399 @@ function extractHours(text){
 }
 
 
-/* ---------- 判断审批状态 ---------- */
+/* =========================
+   从开始/结束时间计算时长
+========================= */
+
+function parseDateTime(text,label){
+
+ /*
+   允许：
+   开始时间:2026-09-16 18:30
+   开始时间 2026.09.16 18:30
+   OCR 中间多几个空格也可以
+ */
+
+ const regex=
+ new RegExp(
+  label+
+  "[^0-9]{0,12}"+
+  "(20\\d{2})[-/.年]"+
+  "(\\d{1,2})[-/.月]"+
+  "(\\d{1,2})[^0-9]{1,8}"+
+  "(\\d{1,2})[:：.]"+
+  "(\\d{2})"
+ );
+
+
+ const m=text.match(regex);
+
+ if(!m)return null;
+
+
+ const y=Number(m[1]);
+ const mo=Number(m[2])-1;
+ const d=Number(m[3]);
+ const h=Number(m[4]);
+ const min=Number(m[5]);
+
+
+ if(
+  mo<0 || mo>11 ||
+  d<1 || d>31 ||
+  h<0 || h>23 ||
+  min<0 || min>59
+ ){
+
+  return null;
+
+ }
+
+
+ return new Date(
+  y,mo,d,h,min,0,0
+ );
+
+}
+
+
+function calculateHoursFromTimes(text){
+
+ const start=
+ parseDateTime(text,"开始时间");
+
+ const end=
+ parseDateTime(text,"结束时间");
+
+
+ if(!start || !end)
+  return null;
+
+
+ const diff=
+ (end-start)/3600000;
+
+
+ if(
+  diff>0 &&
+  diff<=48
+ ){
+
+  return (
+   Math.round(diff*100)/100
+  );
+
+ }
+
+
+ return null;
+
+}
+
+
+/* =========================
+   时长双保险
+========================= */
+
+function extractHours(text){
+
+ /* 第一优先：钉钉自己的时长 */
+
+ const direct=
+ extractHoursDirect(text);
+
+ if(direct!==null){
+
+  return {
+   hours:direct,
+   source:"读取钉钉时长"
+  };
+
+ }
+
+
+ /* 第二优先：开始/结束时间计算 */
+
+ const calculated=
+ calculateHoursFromTimes(text);
+
+ if(calculated!==null){
+
+  return {
+   hours:calculated,
+   source:"根据开始/结束时间计算"
+  };
+
+ }
+
+
+ return {
+  hours:null,
+  source:"未识别"
+ };
+
+}
+
+
+/* =========================
+   审批状态
+========================= */
 
 function isApproved(text){
 
- return /审批\s*通过|审批通过/.test(text);
+ /*
+   允许 OCR 在中文字中插空格
+ */
+
+ const compact=
+ text.replace(/\s+/g,"");
+
+ return compact.includes("审批通过");
 
 }
 
 
 function isRejected(text){
 
- return /审批\s*拒绝|审批拒绝|已撤销|撤销|审批中|待审批/.test(text);
+ const compact=
+ text.replace(/\s+/g,"");
+
+ return (
+  compact.includes("审批拒绝") ||
+  compact.includes("审批中") ||
+  compact.includes("待审批") ||
+  compact.includes("已撤销")
+ );
 
 }
 
 
-/* ---------- 拆分加班卡片 ---------- */
+/* =========================
+   卡片切割核心
 
-function splitOvertimeBlocks(text){
+   不再依赖“提交的加班”
+   主要依赖“开始时间”
+========================= */
 
- const marker=/提交的加班/g;
+function splitByStartTime(text){
 
- const indexes=[];
+ /*
+   找到每一个“开始时间”的位置。
+   一张截图里有三条记录，就得到三个 block。
+ */
 
- let m;
+ const regex=
+ /开始时间/g;
 
- while((m=marker.exec(text))!==null){
+ const positions=[];
 
-  indexes.push(m.index);
+ let match;
 
- }
 
- if(!indexes.length){
+ while(
+  (match=regex.exec(text))!==null
+ ){
 
-  if(/加班/.test(text))
-   return [text];
-
-  return [];
-
- }
-
- const result=[];
-
- for(let i=0;i<indexes.length;i++){
-
-  const start=indexes[i];
-
-  const end=
-  i+1<indexes.length
-  ? indexes[i+1]
-  : text.length;
-
-  result.push(
-   text.slice(start,end)
-  );
+  positions.push(match.index);
 
  }
 
- return result;
 
-}
+ /*
+   如果开始时间 OCR 失败，
+   尝试直接按照完整日期出现的位置拆
+ */
 
+ if(!positions.length){
 
-/* ---------- 拆分请假卡片 ---------- */
+  const dateRegex=
+  /20\d{2}[-/.年]\d{1,2}[-/.月]\d{1,2}/g;
 
-function splitLeaveBlocks(text){
+  while(
+   (match=dateRegex.exec(text))!==null
+  ){
 
- const markers=[
-  /提交的请假/g,
-  /请假类型/g
- ];
-
- let indexes=[];
-
- for(const marker of markers){
-
-  let m;
-
-  while((m=marker.exec(text))!==null){
-
-   indexes.push(m.index);
+   positions.push(match.index);
 
   }
 
-  if(indexes.length)
-   break;
-
  }
 
- indexes=[
-  ...new Set(indexes)
- ].sort((a,b)=>a-b);
 
+ if(!positions.length){
 
- if(!indexes.length){
-
-  if(/请假类型/.test(text))
-   return [text];
-
-  return [];
+  return [text];
 
  }
 
 
- const result=[];
+ const blocks=[];
 
- for(let i=0;i<indexes.length;i++){
 
-  const start=indexes[i];
+ for(let i=0;i<positions.length;i++){
 
-  const end=
-  i+1<indexes.length
-  ? indexes[i+1]
-  : text.length;
+  /*
+   往前多取 100 个字符，
+   这样能把“请假类型：调休”
+   或“提交的加班”带进当前 block。
+  */
 
-  result.push(
+  const start=
+  Math.max(
+   0,
+   positions[i]-120
+  );
+
+
+  let end;
+
+
+  if(i+1<positions.length){
+
+   end=
+   Math.max(
+    start,
+    positions[i+1]-120
+   );
+
+  }else{
+
+   end=text.length;
+
+  }
+
+
+  blocks.push(
    text.slice(start,end)
   );
 
  }
 
- return result;
+
+ return blocks;
 
 }
 
 
-/* ---------- 分析单张截图 ---------- */
+/* =========================
+   判断记录类型
+========================= */
 
-function parseScreenshot(text,fileIndex){
+function detectType(block,wholeText){
+
+ const compact=
+ block.replace(/\s+/g,"");
+
+
+ /*
+   调休优先判断
+ */
+
+ if(
+  compact.includes("请假类型:调休") ||
+  compact.includes("请假类型调休")
+ ){
+
+  return "调休";
+
+ }
+
+
+ /*
+   明确出现病假/事假等，
+   直接视为非调休请假
+ */
+
+ if(
+  compact.includes("请假类型:病假") ||
+  compact.includes("请假类型病假") ||
+  compact.includes("请假类型:事假") ||
+  compact.includes("请假类型事假") ||
+  compact.includes("请假类型:年假") ||
+  compact.includes("请假类型年假")
+ ){
+
+  return "其他请假";
+
+ }
+
+
+ /*
+   加班
+ */
+
+ if(
+  compact.includes("加班")
+ ){
+
+  return "加班";
+
+ }
+
+
+ /*
+   如果当前 block 标题被 OCR 识坏，
+   但整张截图明显是加班历史页面，
+   可以作为加班。
+ */
+
+ const wholeCompact=
+ wholeText.replace(/\s+/g,"");
+
+ if(
+  wholeCompact.includes("加班") &&
+  !wholeCompact.includes("请假类型")
+ ){
+
+  return "加班";
+
+ }
+
+
+ return "未知";
+
+}
+
+
+/* =========================
+   单张截图解析
+========================= */
+
+function parseScreenshot(text,fileIndex,fileName){
 
  const normalized=
  normalizeOCR(text);
 
+
+ const blocks=
+ splitByStartTime(normalized);
+
+
  const items=[];
 
- let localIgnored=0;
+ let ignored=0;
 
 
- /* ===== 加班 ===== */
+ for(let i=0;i<blocks.length;i++){
 
- const overtimeBlocks=
- splitOvertimeBlocks(normalized);
+  const block=blocks[i];
+
+  const type=
+  detectType(
+   block,
+   normalized
+  );
 
 
- for(const block of overtimeBlocks){
-
-  if(!/加班/.test(block))
-   continue;
-
+  /*
+   不是加班/调休
+  */
 
   if(
-   !isApproved(block) ||
-   isRejected(block)
+   type==="其他请假"
   ){
 
-   localIgnored++;
-
-   continue;
-
-  }
-
-
-  const hours=
-  extractHours(block);
-
-  const date=
-  extractDate(block);
-
-
-  if(hours){
-
-   items.push({
-
-    type:"加班",
-
-    date:date||today(),
-
-    hours,
-
-    fileIndex,
-
-    raw:block,
-
-    valid:true,
-
-    duplicate:false,
-
-    selected:true
-
-   });
-
-  }else{
-
-   localIgnored++;
-
-  }
-
- }
-
-
- /* ===== 请假 / 调休 ===== */
-
- const leaveBlocks=
- splitLeaveBlocks(normalized);
-
-
- for(const block of leaveBlocks){
-
-  const isTimeoff=
-  /请假\s*类型\s*:\s*调休|请假类型\s*:\s*调休|类型\s*:\s*调休/.test(block);
-
-
-  if(!isTimeoff){
-
-   localIgnored++;
+   ignored++;
 
    continue;
 
@@ -1920,93 +2190,162 @@ function parseScreenshot(text,fileIndex){
 
 
   if(
-   !isApproved(block) ||
-   isRejected(block)
+   type!=="加班" &&
+   type!=="调休"
   ){
-
-   localIgnored++;
 
    continue;
 
   }
 
 
-  const hours=
-  extractHours(block);
+  /*
+   必须审批通过
+  */
+
+  if(
+   !isApproved(block) ||
+   isRejected(block)
+  ){
+
+   ignored++;
+
+   continue;
+
+  }
+
+
+  /*
+   调休必须再次确认：
+   请假类型确实为调休
+  */
+
+  if(type==="调休"){
+
+   const compact=
+   block.replace(/\s+/g,"");
+
+   if(
+    !compact.includes("请假类型:调休") &&
+    !compact.includes("请假类型调休")
+   ){
+
+    ignored++;
+
+    continue;
+
+   }
+
+  }
+
 
   const date=
   extractDate(block);
 
 
-  if(hours){
+  const hourResult=
+  extractHours(block);
 
-   items.push({
 
-    type:"调休",
+  /*
+   日期或时长其中一个失败，
+   仍然保留下来，
+   让用户在预览页手动补。
+  */
 
-    date:date||today(),
+  items.push({
 
-    hours,
+   type,
 
-    fileIndex,
+   date:date||"",
 
-    raw:block,
+   hours:
+   hourResult.hours!==null
+   ?hourResult.hours
+   :"",
 
-    valid:true,
+   hourSource:
+   hourResult.source,
 
-    duplicate:false,
+   fileIndex,
 
-    selected:true
+   fileName,
 
-   });
+   raw:block,
 
-  }else{
+   valid:
+   !!date &&
+   hourResult.hours!==null,
 
-   localIgnored++;
+   duplicate:false,
 
-  }
+   selected:
+   !!date &&
+   hourResult.hours!==null
+
+  });
 
  }
 
 
  return {
   items,
-  ignored:localIgnored
+  ignored,
+  raw:normalized
  };
 
 }
 
 
-/* ---------- 防重复 ---------- */
+/* =========================
+   防止重复
+========================= */
 
 function markDuplicates(){
 
- const seenNew=new Set();
+ const batchSeen=
+ new Set();
+
 
  importItems.forEach(item=>{
+
+  if(
+   !item.date ||
+   !(Number(item.hours)>0)
+  ){
+
+   item.duplicate=false;
+
+   return;
+
+  }
+
 
   const key=
   `${item.type}|${item.date}|${Number(item.hours)}`;
 
 
-  const existsCloud=
+  const cloudDuplicate=
   records.some(r=>
 
    r.type===item.type &&
 
-   String(r.record_date)===item.date &&
+   String(r.record_date)===
+   String(item.date) &&
 
-   Number(r.hours)===Number(item.hours)
+   Number(r.hours)===
+   Number(item.hours)
 
   );
 
 
-  const existsBatch=
-  seenNew.has(key);
+  const batchDuplicate=
+  batchSeen.has(key);
 
 
   item.duplicate=
-  existsCloud || existsBatch;
+  cloudDuplicate ||
+  batchDuplicate;
 
 
   if(item.duplicate){
@@ -2015,7 +2354,7 @@ function markDuplicates(){
 
   }else{
 
-   seenNew.add(key);
+   batchSeen.add(key);
 
   }
 
@@ -2024,26 +2363,38 @@ function markDuplicates(){
 }
 
 
-/* ---------- 批量 OCR ---------- */
+/* =========================
+   批量 OCR
+========================= */
 
 $("imageInput").onchange=async e=>{
 
  const files=
- Array.from(e.target.files||[]);
+ Array.from(
+  e.target.files||[]
+ );
+
 
  if(!files.length)return;
 
 
  importItems=[];
  ignoredCount=0;
+ failedScreenshots=[];
 
 
- $("progressBox").classList.remove("hidden");
+ $("progressBox")
+ .classList.remove("hidden");
 
- $("resultArea").classList.add("hidden");
+ $("resultArea")
+ .classList.add("hidden");
 
 
- for(let i=0;i<files.length;i++){
+ for(
+  let i=0;
+  i<files.length;
+  i++
+ ){
 
   const file=files[i];
 
@@ -2053,45 +2404,67 @@ $("imageInput").onchange=async e=>{
 
 
   $("progressText").textContent=
-  `正在处理：${file.name}`;
+  `正在处理第 ${i+1} 张截图`;
 
 
   try{
 
    const result=
    await Tesseract.recognize(
+
     file,
+
     "chi_sim+eng",
+
     {
 
      logger:m=>{
 
-      if(m.status==="recognizing text"){
+      if(
+       m.status===
+       "recognizing text"
+      ){
 
        const within=
-       Number(m.progress||0);
+       Number(
+        m.progress||0
+       );
 
-       const totalProgress=
-       ((i+within)/files.length)*100;
 
-       $("progressFill").style.width=
-       totalProgress+"%";
+       const total=
+       (
+        (i+within)/
+        files.length
+       )*100;
 
-       $("progressPercent").textContent=
-       Math.round(totalProgress)+"%";
+
+       $("progressFill")
+       .style.width=
+       total+"%";
+
+
+       $("progressPercent")
+       .textContent=
+       Math.round(total)+"%";
 
       }
 
      }
 
     }
+
    );
+
+
+   const rawText=
+   result?.data?.text||"";
 
 
    const parsed=
    parseScreenshot(
-    result.data.text,
-    i+1
+    rawText,
+    i+1,
+    file.name
    );
 
 
@@ -2104,27 +2477,71 @@ $("imageInput").onchange=async e=>{
    parsed.ignored;
 
 
+   /*
+     一张图完全没有解析出任何候选记录
+     不再悄悄忽略。
+   */
+
+   if(
+    !parsed.items.length
+   ){
+
+    failedScreenshots.push({
+
+     fileIndex:i+1,
+
+     fileName:file.name,
+
+     raw:parsed.raw
+
+    });
+
+   }
+
+
   }catch(err){
 
    console.error(
     "OCR failed",
-    file.name,
     err
    );
 
-   ignoredCount++;
+
+   failedScreenshots.push({
+
+    fileIndex:i+1,
+
+    fileName:file.name,
+
+    raw:
+    "OCR 本身运行失败："+
+    String(
+     err?.message||err
+    )
+
+   });
 
   }
 
 
+  /*
+   每处理完一张就更新总进度
+  */
+
   const finished=
-  ((i+1)/files.length)*100;
+  (
+   (i+1)/
+   files.length
+  )*100;
 
 
-  $("progressFill").style.width=
+  $("progressFill")
+  .style.width=
   finished+"%";
 
-  $("progressPercent").textContent=
+
+  $("progressPercent")
+  .textContent=
   Math.round(finished)+"%";
 
  }
@@ -2133,8 +2550,14 @@ $("imageInput").onchange=async e=>{
  $("progressCount").textContent=
  `识别完成 · ${files.length} 张截图`;
 
+
  $("progressText").textContent=
- "请检查下面的识别结果，确认后再导入。";
+
+ failedScreenshots.length
+
+ ?`有 ${failedScreenshots.length} 张没有成功解析，下面可以直接查看 OCR 原文。`
+
+ :"识别完成，请检查结果后再导入。";
 
 
  markDuplicates();
@@ -2144,11 +2567,14 @@ $("imageInput").onchange=async e=>{
 };
 
 
-/* ---------- 导入预览 ---------- */
+/* =========================
+   预览
+========================= */
 
 function renderImportPreview(){
 
- $("resultArea").classList.remove("hidden");
+ $("resultArea")
+ .classList.remove("hidden");
 
 
  let overtimeCount=0;
@@ -2165,19 +2591,29 @@ function renderImportPreview(){
   if(x.duplicate)
    duplicateCount++;
 
-  if(x.type==="加班"){
+
+  if(
+   x.type==="加班" &&
+   Number(x.hours)>0
+  ){
 
    overtimeCount++;
 
-   overtimeHours+=Number(x.hours);
+   overtimeHours+=
+   Number(x.hours);
 
   }
 
-  if(x.type==="调休"){
+
+  if(
+   x.type==="调休" &&
+   Number(x.hours)>0
+  ){
 
    leaveCount++;
 
-   leaveHours+=Number(x.hours);
+   leaveHours+=
+   Number(x.hours);
 
   }
 
@@ -2187,131 +2623,292 @@ function renderImportPreview(){
  $("sumOvertime").textContent=
  `${overtimeCount}条 / ${fmt(overtimeHours)}h`;
 
+
  $("sumLeave").textContent=
  `${leaveCount}条 / ${fmt(leaveHours)}h`;
 
+
  $("sumIgnored").textContent=
  `${ignoredCount}条`;
+
 
  $("sumDuplicate").textContent=
  `${duplicateCount}条`;
 
 
- if(!importItems.length){
+ let html="";
 
-  $("importPreview").innerHTML=
-  `<div class="empty">
-   没有识别到符合条件的加班或调休记录。<br><br>
-   加班需要“审批通过”；<br>
-   调休需要“请假类型：调休 + 审批通过”。
-  </div>`;
 
-  $("confirmImport").classList.add("hidden");
+ /* =====================
+    有效 / 候选记录
+ ===================== */
 
-  return;
+ if(importItems.length){
+
+  html+=
+  importItems.map(
+   (item,index)=>{
+
+
+    let cls="";
+    let status="";
+
+
+    if(
+     !item.date ||
+     !(Number(item.hours)>0)
+    ){
+
+     cls="bad";
+
+     status=
+     '<span class="importStatus bad">需要手动补充</span>';
+
+    }else if(item.duplicate){
+
+     cls="duplicate";
+
+     status=
+     '<span class="importStatus warn">疑似重复</span>';
+
+    }else{
+
+     status=
+     '<span class="importStatus ok">✓ 可导入</span>';
+
+    }
+
+
+    const source=
+    item.hourSource
+    ?` · ${item.hourSource}`
+    :"";
+
+
+    return `
+
+    <div
+     class="importRow ${cls}"
+     id="importRow${index}"
+    >
+
+     <div class="importTop">
+
+      <div class="importType">
+       截图 ${item.fileIndex}
+       · ${item.type}
+      </div>
+
+      ${status}
+
+     </div>
+
+
+     <div
+      style="
+       font-size:10px;
+       color:#999;
+       margin-top:4px
+      "
+     >
+      ${escapeHtml(source)}
+     </div>
+
+
+     <div class="importEdit">
+
+      <input
+       type="date"
+       value="${item.date}"
+       onchange="
+        updateImport(
+         ${index},
+         'date',
+         this.value
+        )
+       "
+      >
+
+
+      <input
+       type="number"
+       step=".1"
+       min=".1"
+       placeholder="小时"
+       value="${item.hours}"
+       onchange="
+        updateImport(
+         ${index},
+         'hours',
+         this.value
+        )
+       "
+      >
+
+
+      <input
+       value="${item.type}"
+       readonly
+      >
+
+     </div>
+
+
+     <label class="importCheck">
+
+      <input
+       type="checkbox"
+       ${item.selected?"checked":""}
+
+       onchange="
+        updateImport(
+         ${index},
+         'selected',
+         this.checked
+        )
+       "
+      >
+
+      导入这条记录
+
+     </label>
+
+
+     <button
+      style="
+       border:0;
+       background:none;
+       padding:6px 0 0;
+       color:#999;
+       font-size:10px
+      "
+      onclick="
+       toggleRaw(${index})
+      "
+     >
+      查看 OCR 识别原文
+     </button>
+
+
+     <div
+      id="raw${index}"
+      class="rawBox"
+     >
+      ${escapeHtml(item.raw)}
+     </div>
+
+    </div>
+
+    `;
+
+   }
+  ).join("");
 
  }
 
 
- $("confirmImport").classList.remove("hidden");
+ /* =====================
+    完全失败截图
+ ===================== */
 
+ if(failedScreenshots.length){
 
- $("importPreview").innerHTML=
- importItems.map((item,index)=>{
+  html+=`
 
-  const cls=
-  item.duplicate
-  ?"duplicate"
-  :"";
-
-
-  const status=
-  item.duplicate
-  ?'<span class="importStatus warn">疑似重复 · 默认不导入</span>'
-  :'<span class="importStatus ok">✓ 可导入</span>';
-
-
-  return `
-
-  <div class="importRow ${cls}"
-       id="importRow${index}">
-
-   <div class="importTop">
-
-    <div class="importType">
-     截图 ${item.fileIndex} · ${item.type}
-    </div>
-
-    ${status}
-
+   <div class="previewTitle"
+        style="margin-top:22px">
+    未成功解析
    </div>
-
-
-   <div class="importEdit">
-
-    <input
-     type="date"
-     value="${item.date}"
-     onchange="updateImport(${index},'date',this.value)"
-    >
-
-    <input
-     type="number"
-     step=".1"
-     min=".1"
-     value="${item.hours}"
-     onchange="updateImport(${index},'hours',this.value)"
-    >
-
-    <input
-     value="${item.type}"
-     readonly
-    >
-
-   </div>
-
-
-   <label class="importCheck">
-
-    <input
-     type="checkbox"
-     ${item.selected?"checked":""}
-     onchange="updateImport(${index},'selected',this.checked)"
-    >
-
-    导入这条记录
-
-   </label>
-
-
-   <button
-    style="
-     border:0;
-     background:none;
-     padding:5px 0 0;
-     color:#aaa;
-     font-size:10px
-    "
-    onclick="toggleRaw(${index})">
-
-    查看识别原文
-
-   </button>
-
 
    <div
-    id="raw${index}"
-    class="rawBox">
-
-    ${escapeHtml(item.raw)}
-
+    style="
+     font-size:11px;
+     color:#999;
+     margin-bottom:10px;
+     line-height:1.6
+    "
+   >
+    下面这些截图 OCR 已经运行，
+    但没有成功组成加班/调休记录。
+    点开原文可以直接看到网页到底识别成了什么。
    </div>
-
-  </div>
 
   `;
 
- }).join("");
+
+  html+=
+  failedScreenshots.map(
+   (f,index)=>`
+
+   <div class="importRow bad">
+
+    <div class="importTop">
+
+     <div class="importType">
+      截图 ${f.fileIndex}
+     </div>
+
+     <span class="importStatus bad">
+      未解析
+     </span>
+
+    </div>
+
+
+    <button
+     style="
+      border:0;
+      background:#faeeee;
+      color:#a6534e;
+      border-radius:9px;
+      padding:8px 10px;
+      margin-top:9px;
+      font-size:11px
+     "
+     onclick="
+      toggleFailedRaw(${index})
+     "
+    >
+     查看这张图的 OCR 原文
+    </button>
+
+
+    <div
+     id="failedRaw${index}"
+     class="rawBox"
+     style="
+      background:#fff;
+      padding:9px;
+      border-radius:9px
+     "
+    >
+     ${escapeHtml(f.raw)}
+    </div>
+
+   </div>
+
+   `
+  ).join("");
+
+ }
+
+
+ if(
+  !importItems.length &&
+  !failedScreenshots.length
+ ){
+
+  html=`
+   <div class="empty">
+    没有发现符合条件的记录。
+   </div>
+  `;
+
+ }
+
+
+ $("importPreview").innerHTML=
+ html;
 
 
  updateConfirmButton();
@@ -2319,11 +2916,15 @@ function renderImportPreview(){
 }
 
 
-/* ---------- 手动修改预览 ---------- */
+/* =========================
+   预览编辑
+========================= */
 
-window.updateImport=(index,key,value)=>{
+window.updateImport=
+(index,key,value)=>{
 
- if(!importItems[index])return;
+ if(!importItems[index])
+  return;
 
 
  if(key==="hours"){
@@ -2333,7 +2934,24 @@ window.updateImport=(index,key,value)=>{
 
  }else{
 
-  importItems[index][key]=value;
+  importItems[index][key]=
+  value;
+
+ }
+
+
+ /*
+   用户把日期和时长补齐后，
+   自动允许勾选。
+ */
+
+ if(
+  importItems[index].date &&
+  Number(importItems[index].hours)>0 &&
+  !importItems[index].duplicate
+ ){
+
+  importItems[index].valid=true;
 
  }
 
@@ -2347,6 +2965,8 @@ window.toggleRaw=index=>{
 
  const el=$("raw"+index);
 
+ if(!el)return;
+
  el.style.display=
  el.style.display==="block"
  ?"none"
@@ -2355,11 +2975,33 @@ window.toggleRaw=index=>{
 };
 
 
+window.toggleFailedRaw=index=>{
+
+ const el=
+ $("failedRaw"+index);
+
+ if(!el)return;
+
+ el.style.display=
+ el.style.display==="block"
+ ?"none"
+ :"block";
+
+};
+
+
+/* =========================
+   确认按钮
+========================= */
+
 function updateConfirmButton(){
 
  const selected=
  importItems.filter(
-  x=>x.selected && Number(x.hours)>0
+  x=>
+   x.selected &&
+   x.date &&
+   Number(x.hours)>0
  );
 
 
@@ -2378,15 +3020,37 @@ function updateConfirmButton(){
  });
 
 
+ if(!selected.length){
+
+  $("confirmImport")
+  .classList.add("hidden");
+
+  return;
+
+ }
+
+
+ $("confirmImport")
+ .classList.remove("hidden");
+
+
  $("confirmImport").textContent=
- `确认导入 ${selected.length} 条 · 加班 +${fmt(overtime)}h · 调休 -${fmt(leave)}h`;
+
+ `确认导入 ${selected.length} 条`+
+
+ ` · 加班 +${fmt(overtime)}h`+
+
+ ` · 调休 -${fmt(leave)}h`;
 
 }
 
 
-/* ---------- 最终导入 ---------- */
+/* =========================
+   写入 Supabase
+========================= */
 
-$("confirmImport").onclick=async()=>{
+$("confirmImport").onclick=
+async()=>{
 
  const selected=
  importItems.filter(
@@ -2399,7 +3063,7 @@ $("confirmImport").onclick=async()=>{
 
  if(!selected.length){
 
-  toast("没有选择需要导入的记录");
+  toast("没有选择记录");
 
   return;
 
@@ -2410,7 +3074,8 @@ $("confirmImport").onclick=async()=>{
  selected
  .filter(x=>x.type==="加班")
  .reduce(
-  (a,b)=>a+Number(b.hours),
+  (sum,x)=>
+  sum+Number(x.hours),
   0
  );
 
@@ -2419,20 +3084,23 @@ $("confirmImport").onclick=async()=>{
  selected
  .filter(x=>x.type==="调休")
  .reduce(
-  (a,b)=>a+Number(b.hours),
+  (sum,x)=>
+  sum+Number(x.hours),
   0
  );
 
 
- const ok=confirm(
-  `即将导入 ${selected.length} 条记录：\n\n`+
-  `加班：+${fmt(overtime)} 小时\n`+
-  `调休：-${fmt(leave)} 小时\n\n`+
-  `确认导入吗？`
- );
+ if(
+  !confirm(
+   `确认导入 ${selected.length} 条记录？\n\n`+
+   `加班：+${fmt(overtime)} 小时\n`+
+   `调休：-${fmt(leave)} 小时`
+  )
+ ){
 
+  return;
 
- if(!ok)return;
+ }
 
 
  $("confirmImport").disabled=true;
@@ -2452,7 +3120,13 @@ $("confirmImport").onclick=async()=>{
 
   hours:Number(x.hours),
 
-  note:"钉钉截图导入"
+  note:
+  x.hourSource===
+  "根据开始/结束时间计算"
+
+  ?"钉钉截图导入·时间计算"
+
+  :"钉钉截图导入"
 
  }));
 
@@ -2464,7 +3138,9 @@ $("confirmImport").onclick=async()=>{
 
  if(error){
 
-  alert("导入失败："+error.message);
+  alert(
+   "导入失败："+error.message
+  );
 
   $("confirmImport").disabled=false;
 
@@ -2477,17 +3153,18 @@ $("confirmImport").onclick=async()=>{
 
  $("confirmImport").disabled=false;
 
- $("importModal").classList.remove("show");
+ $("importModal")
+ .classList.remove("show");
+
 
  await loadCloud();
 
+
  toast(
-  `成功导入 ${selected.length} 条记录`
+  `成功导入 ${selected.length} 条`
  );
 
 };
-
-
 /* =========================
    回到页面自动刷新
 ========================= */
