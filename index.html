@@ -5,12 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 
 <link rel="apple-touch-icon" href="./D1FAC0F2-8F4D-4DC4-AC2F-4672F9ED307A.png">
-<link rel="icon" type="image/png" href="./D1FAC0F2-8F4D-4DC4-AC2F-4672F9ED307A.png">
+<link rel="icon" href="./D1FAC0F2-8F4D-4DC4-AC2F-4672F9ED307A.png">
 
 <meta name="apple-mobile-web-app-title" content="我的调休">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f6f7f2">
 
 <title>我的调休</title>
@@ -21,28 +19,40 @@
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
- --green:#4f9165;--green2:#eaf4ed;--dark:#20231f;
- --gray:#858985;--bg:#f6f7f2;--white:#fff;
- --red:#bd5b54;--line:#eceee9
+ --green:#4f9165;
+ --green2:#eaf4ed;
+ --dark:#20231f;
+ --gray:#858985;
+ --bg:#f6f7f2;
+ --white:#fff;
+ --red:#bd5b54;
+ --orange:#b77a25;
+ --line:#eceee9;
 }
 body{
  margin:0;background:var(--bg);color:var(--dark);
- font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif
+ font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
 }
-button,input,textarea,select{font:inherit}
+button,input,textarea{font:inherit}
 button{cursor:pointer}
-.app{max-width:680px;margin:auto;padding:22px 16px 55px}
 .hidden{display:none!important}
+.app{max-width:680px;margin:auto;padding:22px 16px 55px}
 
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.header{
+ display:flex;align-items:center;justify-content:space-between;
+ margin-bottom:20px
+}
 .brand{display:flex;align-items:center;gap:10px}
 .logo{width:43px;height:43px;border-radius:14px;object-fit:cover}
 .brand h1{font-size:22px;margin:0}
 .brand p{font-size:11px;color:var(--gray);margin:4px 0 0}
-.userBtn{border:0;background:#eceee9;border-radius:12px;padding:9px 11px;font-size:12px}
+.userBtn{
+ border:0;background:#eceee9;border-radius:12px;
+ padding:9px 11px;font-size:12px
+}
 
 .card{
- background:white;border-radius:22px;padding:19px;margin-bottom:13px;
+ background:#fff;border-radius:22px;padding:19px;margin-bottom:13px;
  box-shadow:0 4px 20px rgba(0,0,0,.035)
 }
 
@@ -51,124 +61,290 @@ button{cursor:pointer}
  color:white;border-radius:26px;padding:23px;margin-bottom:13px
 }
 .balanceLabel{font-size:13px;opacity:.8}
-.balanceNum{font-size:51px;font-weight:780;letter-spacing:-2px;margin-top:5px}
+.balanceNum{
+ font-size:51px;font-weight:780;letter-spacing:-2px;margin-top:5px
+}
 .balanceNum small{font-size:17px;letter-spacing:0}
 .balanceDays{font-size:12px;opacity:.75;margin-top:5px}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:19px}
-.stat{border-top:1px solid rgba(255,255,255,.18);padding-top:13px}
+.stats{
+ display:grid;grid-template-columns:1fr 1fr;
+ gap:10px;margin-top:19px
+}
+.stat{
+ border-top:1px solid rgba(255,255,255,.18);
+ padding-top:13px
+}
 .stat span{display:block;font-size:11px;opacity:.72}
 .stat b{display:block;font-size:18px;margin-top:4px}
 
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}
-.mainBtn{border:0;border-radius:17px;padding:16px;font-weight:700;font-size:15px}
+.actions{
+ display:grid;grid-template-columns:1fr 1fr;
+ gap:9px;margin-bottom:13px
+}
+.mainBtn{
+ border:0;border-radius:17px;padding:16px;
+ font-weight:700;font-size:15px
+}
 .green{background:var(--green);color:white}
 .light{background:white;color:var(--dark)}
 
-.sectionHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}
+.importMain{
+ width:100%;border:1px solid #dce8df;
+ background:#f2f8f3;color:#397950;
+ border-radius:17px;padding:15px;
+ font-weight:700;font-size:14px
+}
+
+.sectionHead{
+ display:flex;justify-content:space-between;
+ align-items:center;margin-bottom:13px
+}
 .sectionTitle{font-size:16px;font-weight:730}
 .muted{font-size:11px;color:var(--gray)}
 
-.month{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.monthBox{background:#f7f8f5;padding:14px;border-radius:15px}
+.month{
+ display:grid;grid-template-columns:1fr 1fr;gap:9px
+}
+.monthBox{
+ background:#f7f8f5;padding:14px;border-radius:15px
+}
 .monthBox span{font-size:11px;color:var(--gray)}
 .monthBox b{display:block;font-size:20px;margin-top:5px}
 
-.quickImport{
- width:100%;border:1px solid #e3e9e3;background:#f8fbf8;
- color:#477c58;border-radius:15px;padding:13px;font-weight:650
-}
-
 .field{margin-bottom:12px}
-label{display:block;font-size:11px;color:var(--gray);margin:0 0 6px 2px}
-input,textarea,select{
- width:100%;border:1px solid #e1e4df;background:#fafbf8;
- border-radius:13px;padding:12px;outline:none;color:var(--dark)
+label{
+ display:block;font-size:11px;color:var(--gray);
+ margin:0 0 6px 2px
 }
-textarea{min-height:105px;resize:vertical}
-input:focus,textarea:focus{border-color:#88b398;background:white}
+input,textarea{
+ width:100%;border:1px solid #e1e4df;
+ background:#fafbf8;border-radius:13px;
+ padding:12px;outline:none;color:var(--dark)
+}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus{
+ border-color:#88b398;background:white
+}
 
-.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.formGrid{
+ display:grid;grid-template-columns:1fr 1fr;gap:10px
+}
 .full{grid-column:1/-1}
-.formActions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.btn{border:0;border-radius:13px;padding:13px;font-weight:680}
+.formActions{
+ display:grid;grid-template-columns:1fr 1fr;gap:9px
+}
+.btn{
+ border:0;border-radius:13px;padding:13px;font-weight:680
+}
 .btnPrimary{background:var(--green);color:white}
 .btnSoft{background:#eef0ec;color:var(--dark)}
+.btnDanger{background:#faeeee;color:var(--red)}
 
 .record{
- display:flex;justify-content:space-between;align-items:center;
- gap:10px;padding:13px 0;border-bottom:1px solid var(--line)
+ display:flex;justify-content:space-between;
+ align-items:center;gap:10px;padding:13px 0;
+ border-bottom:1px solid var(--line)
 }
 .record:last-child{border-bottom:0}
 .rLeft{display:flex;align-items:center;gap:10px;min-width:0}
 .rIcon{
- width:37px;height:37px;border-radius:11px;display:flex;
- align-items:center;justify-content:center;font-weight:700;flex:none
+ width:37px;height:37px;border-radius:11px;
+ display:flex;align-items:center;justify-content:center;
+ font-weight:700;flex:none
 }
 .rIcon.plus{background:#eaf4ed;color:#397950}
 .rIcon.minus{background:#faeeee;color:var(--red)}
 .rType{font-size:14px;font-weight:680}
 .rMeta{
  font-size:11px;color:var(--gray);margin-top:3px;
- max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+ max-width:230px;white-space:nowrap;
+ overflow:hidden;text-overflow:ellipsis
 }
 .rAmount{text-align:right;font-size:16px;font-weight:740}
-.rAmount.plus{color:#397950}.rAmount.minus{color:var(--red)}
-.rTools{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
-.rTools button{border:0;background:none;color:#aaa;padding:0;font-size:10px}
-.empty{text-align:center;color:#aaa;font-size:12px;padding:18px}
+.rAmount.plus{color:#397950}
+.rAmount.minus{color:var(--red)}
+.rTools{
+ display:flex;justify-content:flex-end;gap:8px;margin-top:4px
+}
+.rTools button{
+ border:0;background:none;color:#aaa;
+ padding:0;font-size:10px
+}
+.empty{
+ text-align:center;color:#aaa;font-size:12px;padding:18px
+}
 
-.tools{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
-.tool{border:0;background:#f1f2ef;border-radius:11px;padding:9px;font-size:11px}
-.note{font-size:10px;color:#aaa;line-height:1.6;margin-top:10px}
+.tools{
+ display:flex;flex-wrap:wrap;gap:7px;
+ margin-top:14px;padding-top:14px;
+ border-top:1px solid var(--line)
+}
+.tool{
+ border:0;background:#f1f2ef;
+ border-radius:11px;padding:9px;font-size:11px
+}
 
 .modal{
- position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:100;
- display:none;align-items:flex-end;justify-content:center
+ position:fixed;inset:0;background:rgba(0,0,0,.3);
+ z-index:100;display:none;
+ align-items:flex-end;justify-content:center
 }
 .modal.show{display:flex}
 .sheet{
- width:100%;max-width:680px;background:white;border-radius:25px 25px 0 0;
+ width:100%;max-width:680px;background:white;
+ border-radius:25px 25px 0 0;
  padding:21px 17px calc(23px + env(safe-area-inset-bottom));
- max-height:92vh;overflow:auto
+ max-height:94vh;overflow:auto
 }
-.sheetTitle{font-size:19px;font-weight:740;margin-bottom:16px}
-
-.tabs{display:grid;grid-template-columns:1fr 1fr;background:#f0f1ee;border-radius:12px;padding:3px;margin-bottom:15px}
-.tab{border:0;background:transparent;padding:9px;border-radius:10px}
-.tab.active{background:white;box-shadow:0 1px 5px rgba(0,0,0,.05);font-weight:700}
+.sheetTitle{
+ font-size:19px;font-weight:740;margin-bottom:7px
+}
+.sheetSub{
+ font-size:11px;color:var(--gray);
+ line-height:1.7;margin-bottom:16px
+}
 
 .authWrap{max-width:420px;margin:45px auto}
-.authLogo{width:70px;height:70px;border-radius:22px;display:block;margin:0 auto 15px}
-.authTitle{text-align:center;font-size:25px;font-weight:760}
-.authSub{text-align:center;color:var(--gray);font-size:12px;margin:6px 0 25px}
-.authSwitch{text-align:center;font-size:12px;color:var(--gray);margin-top:15px}
-.authSwitch button{border:0;background:none;color:#397950;font-weight:700}
-
-.importChoice{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.choice{
- border:1px solid #e3e5e1;background:#fafbf8;border-radius:13px;padding:12px
+.authLogo{
+ width:70px;height:70px;border-radius:22px;
+ display:block;margin:0 auto 15px
 }
-.choice.active{border-color:#6ca17c;background:#edf6ef;color:#397950}
-.progress{font-size:12px;color:#477c58;margin:9px 0}
-.preview{background:#f7f8f5;border-radius:13px;padding:10px;margin:10px 0}
-.previewRow{display:flex;justify-content:space-between;padding:7px;border-bottom:1px solid #e7e9e5;font-size:12px}
-.previewRow:last-child{border-bottom:0}
+.authTitle{
+ text-align:center;font-size:25px;font-weight:760
+}
+.authSub{
+ text-align:center;color:var(--gray);
+ font-size:12px;margin:6px 0 25px
+}
+.authSwitch{
+ text-align:center;font-size:12px;
+ color:var(--gray);margin-top:15px
+}
+.authSwitch button{
+ border:0;background:none;color:#397950;font-weight:700
+}
+
+.uploadBox{
+ border:1.5px dashed #b9d2c0;
+ background:#f6faf7;border-radius:18px;
+ padding:20px;text-align:center
+}
+.uploadBox b{display:block;font-size:15px}
+.uploadBox span{
+ display:block;color:var(--gray);
+ font-size:11px;margin-top:6px;line-height:1.6
+}
+.fileButton{
+ display:inline-block;margin-top:13px;
+ background:var(--green);color:white;
+ border-radius:12px;padding:11px 17px;
+ font-size:13px;font-weight:700
+}
+#imageInput{display:none}
+
+.progressBox{
+ background:#f6f8f5;border-radius:16px;
+ padding:14px;margin-top:13px
+}
+.progressTop{
+ display:flex;justify-content:space-between;
+ font-size:12px;margin-bottom:9px
+}
+.progressBar{
+ height:8px;background:#e3e7e2;
+ border-radius:99px;overflow:hidden
+}
+.progressFill{
+ height:100%;width:0;background:var(--green);
+ transition:.2s
+}
+.progressText{
+ font-size:11px;color:var(--gray);
+ margin-top:8px;line-height:1.5
+}
+
+.summary{
+ display:grid;grid-template-columns:1fr 1fr;
+ gap:8px;margin:13px 0
+}
+.summaryBox{
+ background:#f6f8f5;border-radius:14px;padding:12px
+}
+.summaryBox span{
+ display:block;color:var(--gray);font-size:10px
+}
+.summaryBox b{
+ display:block;font-size:17px;margin-top:4px
+}
+
+.previewTitle{
+ font-size:13px;font-weight:700;
+ margin:18px 0 8px
+}
+
+.importRow{
+ border:1px solid #e8eae6;
+ border-radius:15px;padding:12px;
+ margin-bottom:8px;background:white
+}
+.importRow.duplicate{
+ background:#fff9ee;border-color:#ecd7ae
+}
+.importRow.bad{
+ background:#fff4f3;border-color:#efcfcb
+}
+.importTop{
+ display:flex;justify-content:space-between;
+ gap:10px;align-items:center
+}
+.importType{
+ font-size:12px;font-weight:700
+}
+.importStatus{
+ font-size:10px;color:#888
+}
+.importStatus.ok{color:#397950}
+.importStatus.warn{color:#b77a25}
+.importStatus.bad{color:var(--red)}
+
+.importEdit{
+ display:grid;
+ grid-template-columns:1.4fr .8fr .7fr;
+ gap:6px;margin-top:9px
+}
+.importEdit input{
+ padding:8px;font-size:11px;border-radius:9px
+}
+.importCheck{
+ display:flex;align-items:center;gap:6px;
+ margin-top:8px;font-size:11px;color:#666
+}
+.importCheck input{width:auto}
+
+.rawBox{
+ margin-top:8px;font-size:10px;color:#aaa;
+ line-height:1.5;display:none;
+ word-break:break-all
+}
 
 .migrate{
- background:#fff8e8;border:1px solid #f0dfb7;border-radius:16px;
- padding:14px;margin-bottom:13px;font-size:12px;line-height:1.6
+ background:#fff8e8;border:1px solid #f0dfb7;
+ border-radius:16px;padding:14px;
+ margin-bottom:13px;font-size:12px;line-height:1.6
 }
-.migrate button{margin-top:9px;width:100%}
 
 .toast{
- position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
- background:#20231f;color:white;border-radius:13px;padding:11px 15px;
- font-size:12px;z-index:999;display:none;max-width:85%;text-align:center
+ position:fixed;left:50%;bottom:28px;
+ transform:translateX(-50%);
+ background:#20231f;color:white;
+ border-radius:13px;padding:11px 15px;
+ font-size:12px;z-index:999;
+ display:none;max-width:85%;text-align:center
 }
 
 @media(min-width:700px){
  .modal{align-items:center;padding:20px}
- .sheet{max-width:520px;border-radius:25px}
+ .sheet{max-width:560px;border-radius:25px}
 }
 </style>
 </head>
@@ -178,12 +354,18 @@ input:focus,textarea:focus{border-color:#88b398;background:white}
 <!-- 登录 -->
 <div id="authPage" class="app hidden">
  <div class="authWrap">
-  <img class="authLogo" src="./D1FAC0F2-8F4D-4DC4-AC2F-4672F9ED307A.png">
+
+  <img class="authLogo"
+       src="./D1FAC0F2-8F4D-4DC4-AC2F-4672F9ED307A.png">
+
   <div class="authTitle">我的调休</div>
   <div class="authSub">登录后，手机和电脑自动同步</div>
 
   <div class="card">
-   <div id="authHeading" class="sectionTitle" style="margin-bottom:16px">登录</div>
+
+   <div id="authHeading"
+        class="sectionTitle"
+        style="margin-bottom:16px">登录</div>
 
    <div class="field">
     <label>邮箱</label>
@@ -192,15 +374,20 @@ input:focus,textarea:focus{border-color:#88b398;background:white}
 
    <div class="field">
     <label>密码</label>
-    <input id="authPassword" type="password" placeholder="至少 6 位密码">
+    <input id="authPassword"
+           type="password"
+           placeholder="至少 6 位密码">
    </div>
 
-   <button id="authSubmit" class="btn btnPrimary" style="width:100%">登录</button>
+   <button id="authSubmit"
+           class="btn btnPrimary"
+           style="width:100%">登录</button>
 
    <div class="authSwitch">
     <span id="authSwitchText">第一次使用？</span>
     <button id="authSwitch">注册账号</button>
    </div>
+
   </div>
  </div>
 </div>
@@ -211,53 +398,118 @@ input:focus,textarea:focus{border-color:#88b398;background:white}
 
  <div class="header">
   <div class="brand">
-   <img class="logo" src="./D1FAC0F2-8F4D-4DC4-AC2F-4672F9ED307A.png">
+
+   <img class="logo"
+        src="./D1FAC0F2-8F4D-4DC4-AC2F-4672F9ED307A.png">
+
    <div>
     <h1>我的调休</h1>
     <p id="syncText">云端同步</p>
    </div>
+
   </div>
+
   <button id="accountBtn" class="userBtn">账号</button>
  </div>
 
+
  <div id="migrateBox" class="migrate hidden">
-  检测到这台设备上还有旧版“我的调休”记录。
-  可以一键上传到你的云端账号，原来的本地数据不会立即删除。
-  <button id="migrateBtn" class="btn btnPrimary">同步旧记录到云端</button>
+
+  检测到这台设备里还有旧版记录。
+  确认属于当前账号后，可以一键同步到云端。
+
+  <button id="migrateBtn"
+          class="btn btnPrimary"
+          style="width:100%;margin-top:9px">
+   同步旧记录到云端
+  </button>
+
  </div>
 
+
  <div class="balance">
+
   <div class="balanceLabel">当前可调休</div>
-  <div class="balanceNum"><span id="balanceNumber">0</span> <small>小时</small></div>
-  <div id="balanceDays" class="balanceDays">≈ 0天 0小时</div>
+
+  <div class="balanceNum">
+   <span id="balanceNumber">0</span>
+   <small>小时</small>
+  </div>
+
+  <div id="balanceDays" class="balanceDays">
+   ≈ 0天 0小时
+  </div>
 
   <div class="stats">
-   <div class="stat"><span>累计加班</span><b id="earned">0 h</b></div>
-   <div class="stat"><span>累计已休</span><b id="used">0 h</b></div>
+
+   <div class="stat">
+    <span>累计加班</span>
+    <b id="earned">0 h</b>
+   </div>
+
+   <div class="stat">
+    <span>累计已休</span>
+    <b id="used">0 h</b>
+   </div>
+
+  </div>
+
+ </div>
+
+
+ <div class="actions">
+
+  <button id="addOvertime"
+          class="mainBtn green">
+   ＋ 记录加班
+  </button>
+
+  <button id="addLeave"
+          class="mainBtn light">
+   － 记录调休
+  </button>
+
+ </div>
+
+
+ <div class="card">
+  <button id="openImport" class="importMain">
+   📷 批量导入钉钉截图
+  </button>
+
+  <div class="muted"
+       style="text-align:center;margin-top:8px">
+   加班、调休截图可以混着选
   </div>
  </div>
 
- <div class="actions">
-  <button id="addOvertime" class="mainBtn green">＋ 记录加班</button>
-  <button id="addLeave" class="mainBtn light">－ 记录调休</button>
- </div>
 
  <div class="card">
-  <button id="openImport" class="quickImport">📷 钉钉快速导入 / 🎙️ 一句话记录</button>
- </div>
 
- <div class="card">
   <div class="sectionHead">
    <div class="sectionTitle">本月统计</div>
    <div id="monthText" class="muted"></div>
   </div>
+
   <div class="month">
-   <div class="monthBox"><span>本月加班</span><b id="monthEarned">0 h</b></div>
-   <div class="monthBox"><span>本月调休</span><b id="monthUsed">0 h</b></div>
+
+   <div class="monthBox">
+    <span>本月加班</span>
+    <b id="monthEarned">0 h</b>
+   </div>
+
+   <div class="monthBox">
+    <span>本月调休</span>
+    <b id="monthUsed">0 h</b>
+   </div>
+
   </div>
+
  </div>
 
+
  <div class="card">
+
   <div class="sectionHead">
    <div class="sectionTitle">最近记录</div>
    <div class="muted">已云端同步</div>
@@ -266,125 +518,250 @@ input:focus,textarea:focus{border-color:#88b398;background:white}
   <div id="records"></div>
 
   <div class="tools">
-   <button id="setInitial" class="tool">设置初始余额</button>
-   <button id="exportData" class="tool">导出备份</button>
-   <button id="refreshData" class="tool">刷新同步</button>
+
+   <button id="setInitial" class="tool">
+    设置初始余额
+   </button>
+
+   <button id="exportData" class="tool">
+    导出备份
+   </button>
+
+   <button id="refreshData" class="tool">
+    刷新同步
+   </button>
+
   </div>
 
-  <div class="note">
-   登录后的记录保存在你的云端账号中。同一个账号在手机和电脑登录即可同步；
-   其他用户登录自己的账号，只能看到自己的数据。
-  </div>
  </div>
+
 </div>
 
 
-<!-- 新增/编辑 -->
+<!-- 手动记录 -->
 <div id="entryModal" class="modal">
+
  <div class="sheet">
-  <div id="entryTitle" class="sheetTitle">记录加班</div>
+
+  <div id="entryTitle" class="sheetTitle">
+   记录加班
+  </div>
 
   <div class="formGrid">
+
    <div class="field">
     <label>日期</label>
     <input id="dateInput" type="date">
    </div>
+
    <div class="field">
     <label>时长（小时）</label>
-    <input id="hoursInput" type="number" min=".25" step=".25" inputmode="decimal">
+    <input id="hoursInput"
+           type="number"
+           min=".1"
+           step=".1">
    </div>
+
    <div class="field full">
     <label>备注（可选）</label>
-    <input id="noteInput" maxlength="80" placeholder="例如：晚上加班">
+    <input id="noteInput"
+           maxlength="80"
+           placeholder="例如：钉钉补录">
    </div>
+
   </div>
 
   <div class="formActions">
-   <button id="cancelEntry" class="btn btnSoft">取消</button>
-   <button id="saveEntry" class="btn btnPrimary">保存</button>
+
+   <button id="cancelEntry"
+           class="btn btnSoft">
+    取消
+   </button>
+
+   <button id="saveEntry"
+           class="btn btnPrimary">
+    保存
+   </button>
+
   </div>
+
  </div>
+
 </div>
 
 
-<!-- 快速导入 -->
+<!-- 钉钉批量导入 -->
 <div id="importModal" class="modal">
+
  <div class="sheet">
-  <div class="sheetTitle">快速录入</div>
 
-  <div class="tabs">
-   <button class="tab active" data-tab="screenshot">钉钉截图</button>
-   <button class="tab" data-tab="text">文字 / 语音</button>
+  <div class="sheetTitle">
+   批量导入钉钉截图
   </div>
 
-  <div id="screenshotTab">
-   <div class="muted" style="margin-bottom:11px">
-    先告诉我这张截图是哪一种记录，再选择钉钉截图，识别会更准确。
-   </div>
-
-   <div class="importChoice">
-    <button class="choice active" data-type="加班">加班截图</button>
-    <button class="choice" data-type="调休">调休截图</button>
-   </div>
-
-   <input id="imageInput" type="file" accept="image/*">
-
-   <div id="ocrProgress" class="progress hidden"></div>
-
-   <div id="ocrPreview" class="preview hidden"></div>
-
-   <button id="importRecognized" class="btn btnPrimary hidden" style="width:100%">
-    确认导入识别结果
-   </button>
+  <div class="sheetSub">
+   加班和请假截图可以一起选择。
+   系统只会计入“审批通过”的加班，以及“请假类型为调休且审批通过”的调休。
   </div>
 
-  <div id="textTab" class="hidden">
-   <div class="field">
-    <label>输入一句话，或粘贴钉钉审批文字</label>
-    <textarea id="quickText" placeholder="例如：9月17日加班2小时&#10;或者：今天调休1.5小时"></textarea>
+
+  <div class="uploadBox">
+
+   <b>选择钉钉历史记录截图</b>
+
+   <span>
+    可以一次选择多张，不设置固定张数上限。<br>
+    图片较多时会逐张排队识别。
+   </span>
+
+   <label class="fileButton" for="imageInput">
+    选择截图
+   </label>
+
+   <input id="imageInput"
+          type="file"
+          accept="image/*"
+          multiple>
+
+  </div>
+
+
+  <div id="progressBox"
+       class="progressBox hidden">
+
+   <div class="progressTop">
+    <b id="progressCount">准备识别</b>
+    <span id="progressPercent">0%</span>
    </div>
 
-   <div class="formActions">
-    <button id="voiceBtn" class="btn btnSoft">🎙️ 语音输入</button>
-    <button id="parseTextBtn" class="btn btnPrimary">识别内容</button>
+   <div class="progressBar">
+    <div id="progressFill"
+         class="progressFill"></div>
    </div>
 
-   <div id="textPreview" class="preview hidden"></div>
+   <div id="progressText"
+        class="progressText">
+   </div>
 
-   <button id="importTextResult" class="btn btnPrimary hidden" style="width:100%">
+  </div>
+
+
+  <div id="resultArea" class="hidden">
+
+   <div class="summary">
+
+    <div class="summaryBox">
+     <span>有效加班</span>
+     <b id="sumOvertime">0条 / 0h</b>
+    </div>
+
+    <div class="summaryBox">
+     <span>有效调休</span>
+     <b id="sumLeave">0条 / 0h</b>
+    </div>
+
+    <div class="summaryBox">
+     <span>自动排除</span>
+     <b id="sumIgnored">0条</b>
+    </div>
+
+    <div class="summaryBox">
+     <span>疑似重复</span>
+     <b id="sumDuplicate">0条</b>
+    </div>
+
+   </div>
+
+
+   <div class="previewTitle">
+    导入前检查
+   </div>
+
+   <div id="importPreview"></div>
+
+
+   <button id="confirmImport"
+           class="btn btnPrimary"
+           style="width:100%;margin-top:10px">
     确认导入
    </button>
+
   </div>
 
-  <button id="closeImport" class="btn btnSoft" style="width:100%;margin-top:12px">
+
+  <button id="closeImport"
+          class="btn btnSoft"
+          style="width:100%;margin-top:12px">
    关闭
   </button>
+
  </div>
+
 </div>
 
 
 <!-- 账号 -->
 <div id="accountModal" class="modal">
+
  <div class="sheet">
+
   <div class="sheetTitle">我的账号</div>
-  <div class="card" style="box-shadow:none;background:#f7f8f5">
+
+  <div class="card"
+       style="box-shadow:none;background:#f7f8f5">
+
    <div class="muted">当前登录</div>
-   <div id="accountEmail" style="font-weight:650;margin-top:5px;word-break:break-all"></div>
+
+   <div id="accountEmail"
+        style="font-weight:650;margin-top:5px;word-break:break-all">
+   </div>
+
   </div>
-  <button id="logoutBtn" class="btn btnSoft" style="width:100%">退出登录</button>
-  <button id="closeAccount" class="btn btnPrimary" style="width:100%;margin-top:8px">返回</button>
+
+  <button id="logoutBtn"
+          class="btn btnSoft"
+          style="width:100%">
+   退出登录
+  </button>
+
+  <button id="closeAccount"
+          class="btn btnPrimary"
+          style="width:100%;margin-top:8px">
+   返回
+  </button>
+
  </div>
+
 </div>
+
 
 <div id="toast" class="toast"></div>
 
-<script>
-const SUPABASE_URL = "https://zzewoqlhylheggocfzyj.supabase.co";
-const SUPABASE_KEY = "sb_publishable_DXztYtYfmYqCwJav02eLqA_1mHvrLrt";
 
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
- auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
-});
+<script>
+
+/* =========================
+   Supabase
+========================= */
+
+const SUPABASE_URL =
+"https://zzewoqlhylheggocfzyj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_DXztYtYfmYqCwJav02eLqA_1mHvrLrt";
+
+const db = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY,
+ {
+  auth:{
+   persistSession:true,
+   autoRefreshToken:true,
+   detectSessionInUrl:true
+  }
+ }
+);
+
 
 const OLD_RECORD_KEY="my_timeoff_records_v1";
 const OLD_INITIAL_KEY="my_timeoff_initial_v1";
@@ -394,635 +771,1764 @@ const $=id=>document.getElementById(id);
 let user=null;
 let records=[];
 let initialBalance=0;
+
 let entryType="加班";
 let editingId=null;
 let authMode="login";
-let importType="加班";
-let recognized=[];
-let parsedText=[];
+
+let importItems=[];
+let ignoredCount=0;
+
+
+/* =========================
+   通用
+========================= */
 
 function toast(text){
+
  const el=$("toast");
+
  el.textContent=text;
  el.style.display="block";
+
  clearTimeout(window.toastTimer);
- window.toastTimer=setTimeout(()=>el.style.display="none",2500);
+
+ window.toastTimer=setTimeout(()=>{
+  el.style.display="none";
+ },2500);
+
 }
+
 
 function fmt(n){
+
  n=Math.round((Number(n)+Number.EPSILON)*100)/100;
+
  return String(n);
+
 }
 
-function dayText(hours){
- const neg=hours<0?"-":"";
- const h=Math.abs(hours);
- return neg+Math.floor(h/8)+"天 "+fmt(h%8)+"小时";
+
+function localDateString(date=new Date()){
+
+ const y=date.getFullYear();
+
+ const m=String(date.getMonth()+1).padStart(2,"0");
+
+ const d=String(date.getDate()).padStart(2,"0");
+
+ return `${y}-${m}-${d}`;
+
 }
+
 
 function today(){
- const d=new Date();
- const y=d.getFullYear();
- const m=String(d.getMonth()+1).padStart(2,"0");
- const day=String(d.getDate()).padStart(2,"0");
- return `${y}-${m}-${day}`;
+ return localDateString(new Date());
 }
+
+
+function relativeDate(daysAgo){
+
+ const d=new Date();
+
+ d.setDate(d.getDate()-daysAgo);
+
+ return localDateString(d);
+
+}
+
+
+function dayText(hours){
+
+ const negative=hours<0?"-":"";
+
+ const h=Math.abs(hours);
+
+ return negative+
+        Math.floor(h/8)+
+        "天 "+
+        fmt(h%8)+
+        "小时";
+
+}
+
 
 function escapeHtml(s){
- return String(s||"").replace(/[&<>"']/g,m=>({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
- })[m]);
+
+ return String(s||"").replace(
+  /[&<>"']/g,
+  m=>({
+   "&":"&amp;",
+   "<":"&lt;",
+   ">":"&gt;",
+   '"':"&quot;",
+   "'":"&#39;"
+  })[m]
+ );
+
 }
+
+
+/* =========================
+   登录
+========================= */
 
 async function start(){
+
  const {data}=await db.auth.getSession();
+
  if(data.session){
+
   await enterApp(data.session.user);
+
  }else{
+
   showAuth();
+
  }
+
 }
+
 
 function showAuth(){
+
  $("mainPage").classList.add("hidden");
+
  $("authPage").classList.remove("hidden");
+
 }
+
 
 async function enterApp(u){
+
  user=u;
+
  $("authPage").classList.add("hidden");
+
  $("mainPage").classList.remove("hidden");
+
  $("accountEmail").textContent=user.email||"";
+
  await loadCloud();
+
  checkOldData();
+
 }
 
+
 $("authSwitch").onclick=()=>{
+
  authMode=authMode==="login"?"signup":"login";
+
  const signup=authMode==="signup";
- $("authHeading").textContent=signup?"注册账号":"登录";
- $("authSubmit").textContent=signup?"注册":"登录";
- $("authSwitchText").textContent=signup?"已经有账号？":"第一次使用？";
- $("authSwitch").textContent=signup?"返回登录":"注册账号";
+
+ $("authHeading").textContent=
+ signup?"注册账号":"登录";
+
+ $("authSubmit").textContent=
+ signup?"注册":"登录";
+
+ $("authSwitchText").textContent=
+ signup?"已经有账号？":"第一次使用？";
+
+ $("authSwitch").textContent=
+ signup?"返回登录":"注册账号";
+
 };
 
+
 $("authSubmit").onclick=async()=>{
+
  const email=$("authEmail").value.trim();
+
  const password=$("authPassword").value;
 
- if(!email||password.length<6){
-  toast("请输入正确邮箱和至少 6 位密码");
+ if(!email || password.length<6){
+
+  toast("请输入邮箱和至少6位密码");
+
   return;
+
  }
 
  $("authSubmit").disabled=true;
 
  try{
+
   if(authMode==="signup"){
+
    const {data,error}=await db.auth.signUp({
-    email,password,
-    options:{emailRedirectTo:"https://wclaire12.github.io/Days-off/"}
+
+    email,
+    password,
+
+    options:{
+     emailRedirectTo:
+     "https://wclaire12.github.io/Days-off/"
+    }
+
    });
-   if(error) throw error;
+
+   if(error)throw error;
 
    if(data.session){
+
     await enterApp(data.user);
+
    }else{
-    alert("注册成功。请打开邮箱里的验证邮件，点击确认后再回来登录。");
-    authMode="login";
-    $("authHeading").textContent="登录";
-    $("authSubmit").textContent="登录";
-    $("authSwitchText").textContent="第一次使用？";
-    $("authSwitch").textContent="注册账号";
+
+    alert(
+     "注册成功，请先打开邮箱完成验证，然后回来登录。"
+    );
+
    }
+
   }else{
-   const {data,error}=await db.auth.signInWithPassword({email,password});
-   if(error) throw error;
+
+   const {data,error}=
+   await db.auth.signInWithPassword({
+    email,
+    password
+   });
+
+   if(error)throw error;
+
    await enterApp(data.user);
+
   }
+
  }catch(e){
-  alert("操作失败：" + e.message);
+
+  alert("操作失败："+e.message);
+
  }finally{
+
   $("authSubmit").disabled=false;
+
  }
+
 };
 
+
+/* =========================
+   云端数据
+========================= */
+
 async function loadCloud(){
+
  $("syncText").textContent="正在同步…";
 
  const [r,s]=await Promise.all([
+
   db.from("timeoff_records")
    .select("*")
    .order("record_date",{ascending:false})
    .order("created_at",{ascending:false}),
+
   db.from("timeoff_settings")
    .select("initial_balance")
    .eq("user_id",user.id)
    .maybeSingle()
+
  ]);
 
  if(r.error){
-  console.error(r.error);
-  alert("读取记录失败：" + r.error.message);
+
+  alert("读取记录失败："+r.error.message);
+
   return;
+
  }
 
  records=r.data||[];
- initialBalance=s.data?Number(s.data.initial_balance):0;
+
+ initialBalance=
+ s.data?Number(s.data.initial_balance):0;
 
  $("syncText").textContent="已云端同步";
+
  render();
+
 }
+
 
 function render(){
- let earned=0,used=0;
+
+ let earned=0;
+ let used=0;
 
  records.forEach(r=>{
-  if(r.type==="加班") earned+=Number(r.hours);
-  else if(r.type==="调休") used+=Number(r.hours);
+
+  if(r.type==="加班")
+   earned+=Number(r.hours);
+
+  if(r.type==="调休")
+   used+=Number(r.hours);
+
  });
 
- const balance=initialBalance+earned-used;
- $("balanceNumber").textContent=fmt(balance);
- $("balanceDays").textContent="≈ "+dayText(balance);
- $("earned").textContent=fmt(earned)+" h";
- $("used").textContent=fmt(used)+" h";
+ const balance=
+ initialBalance+earned-used;
+
+ $("balanceNumber").textContent=
+ fmt(balance);
+
+ $("balanceDays").textContent=
+ "≈ "+dayText(balance);
+
+ $("earned").textContent=
+ fmt(earned)+" h";
+
+ $("used").textContent=
+ fmt(used)+" h";
+
 
  const d=new Date();
+
  const y=d.getFullYear();
- const m=String(d.getMonth()+1).padStart(2,"0");
+
+ const m=
+ String(d.getMonth()+1).padStart(2,"0");
+
  const prefix=`${y}-${m}`;
 
- let me=0,mu=0;
+ let me=0;
+ let mu=0;
+
  records.forEach(r=>{
+
   if(String(r.record_date).startsWith(prefix)){
-   if(r.type==="加班") me+=Number(r.hours);
-   else mu+=Number(r.hours);
+
+   if(r.type==="加班")
+    me+=Number(r.hours);
+
+   if(r.type==="调休")
+    mu+=Number(r.hours);
+
   }
+
  });
 
- $("monthText").textContent=`${y}年${Number(m)}月`;
- $("monthEarned").textContent=fmt(me)+" h";
- $("monthUsed").textContent=fmt(mu)+" h";
+ $("monthText").textContent=
+ `${y}年${Number(m)}月`;
+
+ $("monthEarned").textContent=
+ fmt(me)+" h";
+
+ $("monthUsed").textContent=
+ fmt(mu)+" h";
 
  renderRecords();
+
 }
+
 
 function renderRecords(){
+
  if(!records.length){
-  $("records").innerHTML='<div class="empty">还没有记录，先记一次加班或调休吧。</div>';
+
+  $("records").innerHTML=
+  '<div class="empty">还没有记录</div>';
+
   return;
+
  }
 
- $("records").innerHTML=records.map(r=>{
+ $("records").innerHTML=
+ records.map(r=>{
+
   const plus=r.type==="加班";
+
   return `
   <div class="record">
+
    <div class="rLeft">
-    <div class="rIcon ${plus?"plus":"minus"}">${plus?"+":"−"}</div>
+
+    <div class="rIcon ${plus?"plus":"minus"}">
+     ${plus?"+":"−"}
+    </div>
+
     <div>
-     <div class="rType">${escapeHtml(r.type)}</div>
-     <div class="rMeta">${escapeHtml(r.record_date)}${r.note?" · "+escapeHtml(r.note):""}</div>
+
+     <div class="rType">
+      ${escapeHtml(r.type)}
+     </div>
+
+     <div class="rMeta">
+      ${escapeHtml(r.record_date)}
+      ${r.note?" · "+escapeHtml(r.note):""}
+     </div>
+
     </div>
+
    </div>
+
    <div>
-    <div class="rAmount ${plus?"plus":"minus"}">${plus?"+":"-"}${fmt(r.hours)}h</div>
-    <div class="rTools">
-     <button onclick="editRecord('${r.id}')">编辑</button>
-     <button onclick="deleteRecord('${r.id}')">删除</button>
+
+    <div class="rAmount ${plus?"plus":"minus"}">
+     ${plus?"+":"-"}${fmt(r.hours)}h
     </div>
+
+    <div class="rTools">
+
+     <button onclick="editRecord('${r.id}')">
+      编辑
+     </button>
+
+     <button onclick="deleteRecord('${r.id}')">
+      删除
+     </button>
+
+    </div>
+
    </div>
+
   </div>`;
+
  }).join("");
+
 }
+
+
+/* =========================
+   手动记录
+========================= */
 
 function openEntry(type){
+
  entryType=type;
  editingId=null;
- $("entryTitle").textContent="记录"+type;
+
+ $("entryTitle").textContent=
+ "记录"+type;
+
  $("dateInput").value=today();
+
  $("hoursInput").value="";
+
  $("noteInput").value="";
+
  $("entryModal").classList.add("show");
- setTimeout(()=>$("hoursInput").focus(),100);
+
 }
 
-$("addOvertime").onclick=()=>openEntry("加班");
-$("addLeave").onclick=()=>openEntry("调休");
-$("cancelEntry").onclick=()=>$("entryModal").classList.remove("show");
+
+$("addOvertime").onclick=
+()=>openEntry("加班");
+
+$("addLeave").onclick=
+()=>openEntry("调休");
+
+
+$("cancelEntry").onclick=()=>{
+
+ $("entryModal").classList.remove("show");
+
+};
+
 
 $("saveEntry").onclick=async()=>{
- const date=$("dateInput").value;
- const hours=Number($("hoursInput").value);
- const note=$("noteInput").value.trim();
 
- if(!date||!(hours>0)){
-  toast("请填写日期和有效时长");
+ const date=$("dateInput").value;
+
+ const hours=
+ Number($("hoursInput").value);
+
+ const note=
+ $("noteInput").value.trim();
+
+ if(!date || !(hours>0)){
+
+  toast("请填写日期和时长");
+
   return;
+
  }
 
  let result;
 
  if(editingId){
-  result=await db.from("timeoff_records")
-   .update({record_date:date,hours,note})
-   .eq("id",editingId);
+
+  result=
+  await db.from("timeoff_records")
+  .update({
+   record_date:date,
+   hours,
+   note
+  })
+  .eq("id",editingId);
+
  }else{
-  result=await db.from("timeoff_records").insert({
-   user_id:user.id,type:entryType,record_date:date,hours,note
+
+  result=
+  await db.from("timeoff_records")
+  .insert({
+
+   user_id:user.id,
+   type:entryType,
+   record_date:date,
+   hours,
+   note
+
   });
+
  }
 
  if(result.error){
+
   alert("保存失败："+result.error.message);
+
   return;
+
  }
 
  $("entryModal").classList.remove("show");
+
  toast("已保存并同步");
+
  await loadCloud();
+
 };
 
+
 window.editRecord=id=>{
+
  const r=records.find(x=>x.id===id);
+
  if(!r)return;
 
  editingId=id;
  entryType=r.type;
- $("entryTitle").textContent="编辑"+r.type;
+
+ $("entryTitle").textContent=
+ "编辑"+r.type;
+
  $("dateInput").value=r.record_date;
+
  $("hoursInput").value=r.hours;
+
  $("noteInput").value=r.note||"";
+
  $("entryModal").classList.add("show");
+
 };
+
 
 window.deleteRecord=async id=>{
- if(!confirm("确定删除这条记录吗？"))return;
 
- const {error}=await db.from("timeoff_records").delete().eq("id",id);
+ if(!confirm("确定删除这条记录吗？"))
+ return;
+
+ const {error}=
+ await db.from("timeoff_records")
+ .delete()
+ .eq("id",id);
+
  if(error){
+
   alert("删除失败："+error.message);
+
   return;
+
  }
- toast("已删除");
+
  await loadCloud();
+
+ toast("已删除");
+
 };
 
+
+/* =========================
+   初始余额
+========================= */
+
 $("setInitial").onclick=async()=>{
- const v=prompt("请输入目前已有的初始调休余额（小时）",fmt(initialBalance));
+
+ const v=prompt(
+  "请输入初始调休余额（小时）",
+  fmt(initialBalance)
+ );
+
  if(v===null)return;
 
  const n=Number(v);
+
  if(Number.isNaN(n)){
+
   toast("请输入数字");
+
   return;
+
  }
 
- const {error}=await db.from("timeoff_settings").upsert({
-  user_id:user.id,initial_balance:n,updated_at:new Date().toISOString()
- },{onConflict:"user_id"});
+ const {error}=
+ await db.from("timeoff_settings")
+ .upsert({
+
+  user_id:user.id,
+  initial_balance:n,
+  updated_at:new Date().toISOString()
+
+ },{
+  onConflict:"user_id"
+ });
 
  if(error){
+
   alert("保存失败："+error.message);
+
   return;
+
  }
 
- toast("初始余额已同步");
  await loadCloud();
+
+ toast("已保存");
+
 };
+
 
 $("refreshData").onclick=async()=>{
+
  await loadCloud();
+
  toast("同步完成");
+
 };
 
-$("accountBtn").onclick=()=>$("accountModal").classList.add("show");
-$("closeAccount").onclick=()=>$("accountModal").classList.remove("show");
+
+/* =========================
+   账号
+========================= */
+
+$("accountBtn").onclick=()=>{
+
+ $("accountModal").classList.add("show");
+
+};
+
+$("closeAccount").onclick=()=>{
+
+ $("accountModal").classList.remove("show");
+
+};
 
 $("logoutBtn").onclick=async()=>{
+
  await db.auth.signOut();
+
  user=null;
  records=[];
+
  $("accountModal").classList.remove("show");
+
  showAuth();
+
 };
 
+
+/* =========================
+   导出
+========================= */
+
 $("exportData").onclick=()=>{
+
  const payload={
+
   version:2,
   initial:initialBalance,
   records,
   exportedAt:new Date().toISOString()
+
  };
- const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
- const url=URL.createObjectURL(blob);
- const a=document.createElement("a");
+
+ const blob=
+ new Blob(
+  [JSON.stringify(payload,null,2)],
+  {type:"application/json"}
+ );
+
+ const url=
+ URL.createObjectURL(blob);
+
+ const a=
+ document.createElement("a");
+
  a.href=url;
- a.download="我的调休云端备份.json";
+
+ a.download=
+ "我的调休云端备份.json";
+
  a.click();
+
  URL.revokeObjectURL(url);
+
 };
 
-/* ===== 旧版数据迁移 ===== */
+
+/* =========================
+   旧数据迁移
+========================= */
 
 function oldData(){
+
  try{
-  return JSON.parse(localStorage.getItem(OLD_RECORD_KEY)||"[]");
- }catch(e){return []}
+
+  return JSON.parse(
+   localStorage.getItem(OLD_RECORD_KEY)||"[]"
+  );
+
+ }catch(e){
+
+  return [];
+
+ }
+
 }
+
 
 function checkOldData(){
+
  const old=oldData();
- const done=localStorage.getItem("timeoff_migrated_"+user.id);
- $("migrateBox").classList.toggle("hidden",!old.length||!!done);
+
+ const done=
+ localStorage.getItem(
+  "timeoff_migrated_"+user.id
+ );
+
+ $("migrateBox")
+ .classList.toggle(
+  "hidden",
+  !old.length || !!done
+ );
+
 }
+
 
 $("migrateBtn").onclick=async()=>{
+
  const old=oldData();
- const oldInitial=Number(localStorage.getItem(OLD_INITIAL_KEY)||0);
 
- if(!old.length){
-  toast("没有发现旧记录");
-  return;
- }
+ const oldInitial=
+ Number(
+  localStorage.getItem(OLD_INITIAL_KEY)||0
+ );
 
- if(!confirm(`发现 ${old.length} 条旧记录，确定上传到当前账号吗？`))return;
+ if(!old.length)return;
 
- $("migrateBtn").disabled=true;
- $("migrateBtn").textContent="正在同步…";
+ if(!confirm(
+  `发现 ${old.length} 条旧记录，确定同步到当前账号吗？`
+ ))return;
 
- const rows=old
-  .filter(x=>x.date&&Number(x.hours)>0&&(x.type==="加班"||x.type==="调休"))
-  .map(x=>({
-   user_id:user.id,
-   type:x.type,
-   record_date:x.date,
-   hours:Number(x.hours),
-   note:x.note||"旧版导入"
-  }));
 
- const {error}=await db.from("timeoff_records").insert(rows);
+ const rows=
+ old
+ .filter(x=>
+  x.date &&
+  Number(x.hours)>0 &&
+  (x.type==="加班"||x.type==="调休")
+ )
+ .map(x=>({
 
- if(error){
-  alert("旧记录同步失败："+error.message);
-  $("migrateBtn").disabled=false;
-  $("migrateBtn").textContent="同步旧记录到云端";
-  return;
- }
-
- if(oldInitial!==0){
-  await db.from("timeoff_settings").upsert({
-   user_id:user.id,
-   initial_balance:oldInitial,
-   updated_at:new Date().toISOString()
-  },{onConflict:"user_id"});
- }
-
- localStorage.setItem("timeoff_migrated_"+user.id,"1");
- $("migrateBox").classList.add("hidden");
- toast("旧记录已同步到云端");
- await loadCloud();
-};
-
-/* ===== 快速导入 ===== */
-
-$("openImport").onclick=()=>$("importModal").classList.add("show");
-$("closeImport").onclick=()=>$("importModal").classList.remove("show");
-
-document.querySelectorAll(".tab").forEach(btn=>{
- btn.onclick=()=>{
-  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-  btn.classList.add("active");
-  const shot=btn.dataset.tab==="screenshot";
-  $("screenshotTab").classList.toggle("hidden",!shot);
-  $("textTab").classList.toggle("hidden",shot);
- };
-});
-
-document.querySelectorAll(".choice").forEach(btn=>{
- btn.onclick=()=>{
-  document.querySelectorAll(".choice").forEach(x=>x.classList.remove("active"));
-  btn.classList.add("active");
-  importType=btn.dataset.type;
- };
-});
-
-function normalizeDate(y,m,d){
- const now=new Date();
- y=y?Number(y):now.getFullYear();
- m=String(Number(m)).padStart(2,"0");
- d=String(Number(d)).padStart(2,"0");
- return `${y}-${m}-${d}`;
-}
-
-function parseNaturalText(text,forcedType=null){
- text=String(text||"")
-  .replace(/[：]/g,":")
-  .replace(/\s+/g," ");
-
- let type=forcedType;
- if(!type){
-  if(/调休|请假/.test(text))type="调休";
-  else if(/加班/.test(text))type="加班";
- }
-
- if(!type)return [];
-
- let date=today();
-
- const full=text.match(/(20\d{2})[年\-\/.](\d{1,2})[月\-\/.](\d{1,2})/);
- const short=text.match(/(\d{1,2})月(\d{1,2})[日号]?/);
-
- if(full)date=normalizeDate(full[1],full[2],full[3]);
- else if(short)date=normalizeDate(null,short[1],short[2]);
- else if(/昨天/.test(text)){
-  const d=new Date();d.setDate(d.getDate()-1);
-  date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
- }
-
- let hours=null;
-
- const h=text.match(/(?:时长|共计|合计)?\s*[:：]?\s*(\d+(?:\.\d+)?)\s*(?:小时|h|H)/);
- if(h)hours=Number(h[1]);
-
- if(!hours){
-  const num=text.match(/(?:加班|调休|请假)[^\d]{0,8}(\d+(?:\.\d+)?)/);
-  if(num)hours=Number(num[1]);
- }
-
- if(!hours||hours<=0)return [];
-
- return [{type,date,hours,note:"快速录入"}];
-}
-
-/* 尝试从 OCR 文本中识别多条日期 + 时长 */
-function parseOCR(text,type){
- const lines=String(text||"").split(/\n+/).map(x=>x.trim()).filter(Boolean);
- const result=[];
-
- for(let i=0;i<lines.length;i++){
-  const area=lines.slice(Math.max(0,i-3),Math.min(lines.length,i+5)).join(" ");
-
-  const dateMatch=area.match(/(20\d{2})[\-\/.年](\d{1,2})[\-\/.月](\d{1,2})/);
-  const hourMatch=area.match(/(?:时长|小时|duration)?[^\d]{0,8}(\d+(?:\.\d+)?)\s*(?:小时|h|H)/i);
-
-  if(dateMatch&&hourMatch){
-   const item={
-    type,
-    date:normalizeDate(dateMatch[1],dateMatch[2],dateMatch[3]),
-    hours:Number(hourMatch[1]),
-    note:"钉钉截图导入"
-   };
-
-   if(item.hours>0&&!result.some(x=>x.date===item.date&&x.hours===item.hours)){
-    result.push(item);
-   }
-  }
- }
-
- /* 单条截图兜底 */
- if(!result.length){
-  const one=parseNaturalText(text,type);
-  return one;
- }
-
- return result;
-}
-
-function showPreview(boxId,buttonId,data){
- const box=$(boxId);
- const btn=$(buttonId);
-
- if(!data.length){
-  box.classList.remove("hidden");
-  box.innerHTML="没有可靠识别到日期和时长。可以切换到“文字 / 语音”快速录入。";
-  btn.classList.add("hidden");
-  return;
- }
-
- box.innerHTML=data.map(x=>`
-  <div class="previewRow">
-   <span>${escapeHtml(x.date)} · ${escapeHtml(x.type)}</span>
-   <b>${fmt(x.hours)}h</b>
-  </div>
- `).join("");
-
- box.classList.remove("hidden");
- btn.classList.remove("hidden");
-}
-
-$("imageInput").onchange=async e=>{
- const file=e.target.files[0];
- if(!file)return;
-
- recognized=[];
- $("ocrPreview").classList.add("hidden");
- $("importRecognized").classList.add("hidden");
- $("ocrProgress").classList.remove("hidden");
- $("ocrProgress").textContent="正在识别截图，第一次使用可能需要几十秒…";
-
- try{
-  const result=await Tesseract.recognize(file,"chi_sim+eng",{
-   logger:m=>{
-    if(m.status==="recognizing text"){
-     $("ocrProgress").textContent=`正在识别… ${Math.round((m.progress||0)*100)}%`;
-    }
-   }
-  });
-
-  recognized=parseOCR(result.data.text,importType);
-  $("ocrProgress").textContent=`识别完成，共找到 ${recognized.length} 条记录`;
-  showPreview("ocrPreview","importRecognized",recognized);
-
- }catch(err){
-  console.error(err);
-  $("ocrProgress").textContent="截图识别失败，请使用文字 / 语音录入。";
- }
-};
-
-async function insertMany(items){
- if(!items.length)return false;
-
- const rows=items.map(x=>({
   user_id:user.id,
   type:x.type,
   record_date:x.date,
   hours:Number(x.hours),
-  note:x.note||"快速导入"
+  note:x.note||"旧版导入"
+
  }));
 
- const {error}=await db.from("timeoff_records").insert(rows);
+
+ const {error}=
+ await db.from("timeoff_records")
+ .insert(rows);
+
 
  if(error){
-  alert("导入失败："+error.message);
-  return false;
+
+  alert("同步失败："+error.message);
+
+  return;
+
  }
+
+
+ if(oldInitial!==0){
+
+  await db.from("timeoff_settings")
+  .upsert({
+
+   user_id:user.id,
+   initial_balance:oldInitial,
+   updated_at:new Date().toISOString()
+
+  },{
+   onConflict:"user_id"
+  });
+
+ }
+
+
+ localStorage.setItem(
+  "timeoff_migrated_"+user.id,
+  "1"
+ );
+
+ $("migrateBox").classList.add("hidden");
 
  await loadCloud();
- return true;
+
+ toast("旧记录已同步");
+
+};
+
+
+/* ======================================================
+   钉钉批量截图识别
+====================================================== */
+
+$("openImport").onclick=()=>{
+
+ importItems=[];
+ ignoredCount=0;
+
+ $("imageInput").value="";
+
+ $("progressBox").classList.add("hidden");
+
+ $("resultArea").classList.add("hidden");
+
+ $("importPreview").innerHTML="";
+
+ $("importModal").classList.add("show");
+
+};
+
+
+$("closeImport").onclick=()=>{
+
+ $("importModal").classList.remove("show");
+
+};
+
+
+/* ---------- 文本标准化 ---------- */
+
+function normalizeOCR(text){
+
+ return String(text||"")
+
+ .replace(/：/g,":")
+
+ .replace(/[—–−]/g,"-")
+
+ .replace(/[．。]/g,".")
+
+ .replace(/\r/g,"\n")
+
+ .replace(/[ \t]+/g," ");
+
 }
 
-$("importRecognized").onclick=async()=>{
- if(await insertMany(recognized)){
-  toast(`已导入 ${recognized.length} 条记录`);
-  $("importModal").classList.remove("show");
-  $("imageInput").value="";
+
+/* ---------- 日期 ---------- */
+
+function extractDate(text){
+
+ let m=text.match(
+  /(20\d{2})[\-\/.年](\d{1,2})[\-\/.月](\d{1,2})/
+ );
+
+ if(m){
+
+  return (
+   m[1]+"-"+
+   String(Number(m[2])).padStart(2,"0")+"-"+
+   String(Number(m[3])).padStart(2,"0")
+  );
+
  }
-};
 
-$("parseTextBtn").onclick=()=>{
- parsedText=parseNaturalText($("quickText").value);
- showPreview("textPreview","importTextResult",parsedText);
-};
+ if(/前天/.test(text))
+  return relativeDate(2);
 
-$("importTextResult").onclick=async()=>{
- if(await insertMany(parsedText)){
-  toast("记录已保存并同步");
-  $("importModal").classList.remove("show");
-  $("quickText").value="";
+ if(/昨天/.test(text))
+  return relativeDate(1);
+
+ if(/今天/.test(text))
+  return today();
+
+ return "";
+
+}
+
+
+/* ---------- 时长 ---------- */
+
+function extractHours(text){
+
+ const patterns=[
+
+  /时\s*长\s*[:：]?\s*(\d+(?:\.\d+)?)/i,
+
+  /时\s*长[^\d]{0,5}(\d+(?:\.\d+)?)/i,
+
+  /(\d+(?:\.\d+)?)\s*小时/i
+
+ ];
+
+ for(const p of patterns){
+
+  const m=text.match(p);
+
+  if(m){
+
+   const n=Number(m[1]);
+
+   if(n>0 && n<=100)
+    return n;
+
+  }
+
  }
+
+ return null;
+
+}
+
+
+/* ---------- 判断审批状态 ---------- */
+
+function isApproved(text){
+
+ return /审批\s*通过|审批通过/.test(text);
+
+}
+
+
+function isRejected(text){
+
+ return /审批\s*拒绝|审批拒绝|已撤销|撤销|审批中|待审批/.test(text);
+
+}
+
+
+/* ---------- 拆分加班卡片 ---------- */
+
+function splitOvertimeBlocks(text){
+
+ const marker=/提交的加班/g;
+
+ const indexes=[];
+
+ let m;
+
+ while((m=marker.exec(text))!==null){
+
+  indexes.push(m.index);
+
+ }
+
+ if(!indexes.length){
+
+  if(/加班/.test(text))
+   return [text];
+
+  return [];
+
+ }
+
+ const result=[];
+
+ for(let i=0;i<indexes.length;i++){
+
+  const start=indexes[i];
+
+  const end=
+  i+1<indexes.length
+  ? indexes[i+1]
+  : text.length;
+
+  result.push(
+   text.slice(start,end)
+  );
+
+ }
+
+ return result;
+
+}
+
+
+/* ---------- 拆分请假卡片 ---------- */
+
+function splitLeaveBlocks(text){
+
+ const markers=[
+  /提交的请假/g,
+  /请假类型/g
+ ];
+
+ let indexes=[];
+
+ for(const marker of markers){
+
+  let m;
+
+  while((m=marker.exec(text))!==null){
+
+   indexes.push(m.index);
+
+  }
+
+  if(indexes.length)
+   break;
+
+ }
+
+ indexes=[
+  ...new Set(indexes)
+ ].sort((a,b)=>a-b);
+
+
+ if(!indexes.length){
+
+  if(/请假类型/.test(text))
+   return [text];
+
+  return [];
+
+ }
+
+
+ const result=[];
+
+ for(let i=0;i<indexes.length;i++){
+
+  const start=indexes[i];
+
+  const end=
+  i+1<indexes.length
+  ? indexes[i+1]
+  : text.length;
+
+  result.push(
+   text.slice(start,end)
+  );
+
+ }
+
+ return result;
+
+}
+
+
+/* ---------- 分析单张截图 ---------- */
+
+function parseScreenshot(text,fileIndex){
+
+ const normalized=
+ normalizeOCR(text);
+
+ const items=[];
+
+ let localIgnored=0;
+
+
+ /* ===== 加班 ===== */
+
+ const overtimeBlocks=
+ splitOvertimeBlocks(normalized);
+
+
+ for(const block of overtimeBlocks){
+
+  if(!/加班/.test(block))
+   continue;
+
+
+  if(
+   !isApproved(block) ||
+   isRejected(block)
+  ){
+
+   localIgnored++;
+
+   continue;
+
+  }
+
+
+  const hours=
+  extractHours(block);
+
+  const date=
+  extractDate(block);
+
+
+  if(hours){
+
+   items.push({
+
+    type:"加班",
+
+    date:date||today(),
+
+    hours,
+
+    fileIndex,
+
+    raw:block,
+
+    valid:true,
+
+    duplicate:false,
+
+    selected:true
+
+   });
+
+  }else{
+
+   localIgnored++;
+
+  }
+
+ }
+
+
+ /* ===== 请假 / 调休 ===== */
+
+ const leaveBlocks=
+ splitLeaveBlocks(normalized);
+
+
+ for(const block of leaveBlocks){
+
+  const isTimeoff=
+  /请假\s*类型\s*:\s*调休|请假类型\s*:\s*调休|类型\s*:\s*调休/.test(block);
+
+
+  if(!isTimeoff){
+
+   localIgnored++;
+
+   continue;
+
+  }
+
+
+  if(
+   !isApproved(block) ||
+   isRejected(block)
+  ){
+
+   localIgnored++;
+
+   continue;
+
+  }
+
+
+  const hours=
+  extractHours(block);
+
+  const date=
+  extractDate(block);
+
+
+  if(hours){
+
+   items.push({
+
+    type:"调休",
+
+    date:date||today(),
+
+    hours,
+
+    fileIndex,
+
+    raw:block,
+
+    valid:true,
+
+    duplicate:false,
+
+    selected:true
+
+   });
+
+  }else{
+
+   localIgnored++;
+
+  }
+
+ }
+
+
+ return {
+  items,
+  ignored:localIgnored
+ };
+
+}
+
+
+/* ---------- 防重复 ---------- */
+
+function markDuplicates(){
+
+ const seenNew=new Set();
+
+ importItems.forEach(item=>{
+
+  const key=
+  `${item.type}|${item.date}|${Number(item.hours)}`;
+
+
+  const existsCloud=
+  records.some(r=>
+
+   r.type===item.type &&
+
+   String(r.record_date)===item.date &&
+
+   Number(r.hours)===Number(item.hours)
+
+  );
+
+
+  const existsBatch=
+  seenNew.has(key);
+
+
+  item.duplicate=
+  existsCloud || existsBatch;
+
+
+  if(item.duplicate){
+
+   item.selected=false;
+
+  }else{
+
+   seenNew.add(key);
+
+  }
+
+ });
+
+}
+
+
+/* ---------- 批量 OCR ---------- */
+
+$("imageInput").onchange=async e=>{
+
+ const files=
+ Array.from(e.target.files||[]);
+
+ if(!files.length)return;
+
+
+ importItems=[];
+ ignoredCount=0;
+
+
+ $("progressBox").classList.remove("hidden");
+
+ $("resultArea").classList.add("hidden");
+
+
+ for(let i=0;i<files.length;i++){
+
+  const file=files[i];
+
+
+  $("progressCount").textContent=
+  `正在识别 ${i+1} / ${files.length}`;
+
+
+  $("progressText").textContent=
+  `正在处理：${file.name}`;
+
+
+  try{
+
+   const result=
+   await Tesseract.recognize(
+    file,
+    "chi_sim+eng",
+    {
+
+     logger:m=>{
+
+      if(m.status==="recognizing text"){
+
+       const within=
+       Number(m.progress||0);
+
+       const totalProgress=
+       ((i+within)/files.length)*100;
+
+       $("progressFill").style.width=
+       totalProgress+"%";
+
+       $("progressPercent").textContent=
+       Math.round(totalProgress)+"%";
+
+      }
+
+     }
+
+    }
+   );
+
+
+   const parsed=
+   parseScreenshot(
+    result.data.text,
+    i+1
+   );
+
+
+   importItems.push(
+    ...parsed.items
+   );
+
+
+   ignoredCount+=
+   parsed.ignored;
+
+
+  }catch(err){
+
+   console.error(
+    "OCR failed",
+    file.name,
+    err
+   );
+
+   ignoredCount++;
+
+  }
+
+
+  const finished=
+  ((i+1)/files.length)*100;
+
+
+  $("progressFill").style.width=
+  finished+"%";
+
+  $("progressPercent").textContent=
+  Math.round(finished)+"%";
+
+ }
+
+
+ $("progressCount").textContent=
+ `识别完成 · ${files.length} 张截图`;
+
+ $("progressText").textContent=
+ "请检查下面的识别结果，确认后再导入。";
+
+
+ markDuplicates();
+
+ renderImportPreview();
+
 };
 
-/* 语音 */
-$("voiceBtn").onclick=()=>{
- const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
 
- if(!SpeechRecognition){
-  toast("当前浏览器不支持网页语音识别，可以直接输入文字");
+/* ---------- 导入预览 ---------- */
+
+function renderImportPreview(){
+
+ $("resultArea").classList.remove("hidden");
+
+
+ let overtimeCount=0;
+ let overtimeHours=0;
+
+ let leaveCount=0;
+ let leaveHours=0;
+
+ let duplicateCount=0;
+
+
+ importItems.forEach(x=>{
+
+  if(x.duplicate)
+   duplicateCount++;
+
+  if(x.type==="加班"){
+
+   overtimeCount++;
+
+   overtimeHours+=Number(x.hours);
+
+  }
+
+  if(x.type==="调休"){
+
+   leaveCount++;
+
+   leaveHours+=Number(x.hours);
+
+  }
+
+ });
+
+
+ $("sumOvertime").textContent=
+ `${overtimeCount}条 / ${fmt(overtimeHours)}h`;
+
+ $("sumLeave").textContent=
+ `${leaveCount}条 / ${fmt(leaveHours)}h`;
+
+ $("sumIgnored").textContent=
+ `${ignoredCount}条`;
+
+ $("sumDuplicate").textContent=
+ `${duplicateCount}条`;
+
+
+ if(!importItems.length){
+
+  $("importPreview").innerHTML=
+  `<div class="empty">
+   没有识别到符合条件的加班或调休记录。<br><br>
+   加班需要“审批通过”；<br>
+   调休需要“请假类型：调休 + 审批通过”。
+  </div>`;
+
+  $("confirmImport").classList.add("hidden");
+
   return;
+
  }
 
- const recognition=new SpeechRecognition();
- recognition.lang="zh-CN";
- recognition.interimResults=false;
 
- $("voiceBtn").textContent="正在听…";
+ $("confirmImport").classList.remove("hidden");
 
- recognition.onresult=e=>{
-  const text=e.results[0][0].transcript;
-  $("quickText").value=text;
-  $("voiceBtn").textContent="🎙️ 语音输入";
-  parsedText=parseNaturalText(text);
-  showPreview("textPreview","importTextResult",parsedText);
- };
 
- recognition.onerror=()=>{
-  $("voiceBtn").textContent="🎙️ 语音输入";
-  toast("没有识别成功，请再试一次");
- };
+ $("importPreview").innerHTML=
+ importItems.map((item,index)=>{
 
- recognition.onend=()=>{
-  $("voiceBtn").textContent="🎙️ 语音输入";
- };
+  const cls=
+  item.duplicate
+  ?"duplicate"
+  :"";
 
- recognition.start();
+
+  const status=
+  item.duplicate
+  ?'<span class="importStatus warn">疑似重复 · 默认不导入</span>'
+  :'<span class="importStatus ok">✓ 可导入</span>';
+
+
+  return `
+
+  <div class="importRow ${cls}"
+       id="importRow${index}">
+
+   <div class="importTop">
+
+    <div class="importType">
+     截图 ${item.fileIndex} · ${item.type}
+    </div>
+
+    ${status}
+
+   </div>
+
+
+   <div class="importEdit">
+
+    <input
+     type="date"
+     value="${item.date}"
+     onchange="updateImport(${index},'date',this.value)"
+    >
+
+    <input
+     type="number"
+     step=".1"
+     min=".1"
+     value="${item.hours}"
+     onchange="updateImport(${index},'hours',this.value)"
+    >
+
+    <input
+     value="${item.type}"
+     readonly
+    >
+
+   </div>
+
+
+   <label class="importCheck">
+
+    <input
+     type="checkbox"
+     ${item.selected?"checked":""}
+     onchange="updateImport(${index},'selected',this.checked)"
+    >
+
+    导入这条记录
+
+   </label>
+
+
+   <button
+    style="
+     border:0;
+     background:none;
+     padding:5px 0 0;
+     color:#aaa;
+     font-size:10px
+    "
+    onclick="toggleRaw(${index})">
+
+    查看识别原文
+
+   </button>
+
+
+   <div
+    id="raw${index}"
+    class="rawBox">
+
+    ${escapeHtml(item.raw)}
+
+   </div>
+
+  </div>
+
+  `;
+
+ }).join("");
+
+
+ updateConfirmButton();
+
+}
+
+
+/* ---------- 手动修改预览 ---------- */
+
+window.updateImport=(index,key,value)=>{
+
+ if(!importItems[index])return;
+
+
+ if(key==="hours"){
+
+  importItems[index][key]=
+  Number(value);
+
+ }else{
+
+  importItems[index][key]=value;
+
+ }
+
+
+ updateConfirmButton();
+
 };
 
-db.auth.onAuthStateChange((event,session)=>{
- if(event==="SIGNED_OUT")showAuth();
-});
+
+window.toggleRaw=index=>{
+
+ const el=$("raw"+index);
+
+ el.style.display=
+ el.style.display==="block"
+ ?"none"
+ :"block";
+
+};
+
+
+function updateConfirmButton(){
+
+ const selected=
+ importItems.filter(
+  x=>x.selected && Number(x.hours)>0
+ );
+
+
+ let overtime=0;
+ let leave=0;
+
+
+ selected.forEach(x=>{
+
+  if(x.type==="加班")
+   overtime+=Number(x.hours);
+
+  if(x.type==="调休")
+   leave+=Number(x.hours);
+
+ });
+
+
+ $("confirmImport").textContent=
+ `确认导入 ${selected.length} 条 · 加班 +${fmt(overtime)}h · 调休 -${fmt(leave)}h`;
+
+}
+
+
+/* ---------- 最终导入 ---------- */
+
+$("confirmImport").onclick=async()=>{
+
+ const selected=
+ importItems.filter(
+  x=>
+   x.selected &&
+   x.date &&
+   Number(x.hours)>0
+ );
+
+
+ if(!selected.length){
+
+  toast("没有选择需要导入的记录");
+
+  return;
+
+ }
+
+
+ const overtime=
+ selected
+ .filter(x=>x.type==="加班")
+ .reduce(
+  (a,b)=>a+Number(b.hours),
+  0
+ );
+
+
+ const leave=
+ selected
+ .filter(x=>x.type==="调休")
+ .reduce(
+  (a,b)=>a+Number(b.hours),
+  0
+ );
+
+
+ const ok=confirm(
+  `即将导入 ${selected.length} 条记录：\n\n`+
+  `加班：+${fmt(overtime)} 小时\n`+
+  `调休：-${fmt(leave)} 小时\n\n`+
+  `确认导入吗？`
+ );
+
+
+ if(!ok)return;
+
+
+ $("confirmImport").disabled=true;
+
+ $("confirmImport").textContent=
+ "正在写入云端…";
+
+
+ const rows=
+ selected.map(x=>({
+
+  user_id:user.id,
+
+  type:x.type,
+
+  record_date:x.date,
+
+  hours:Number(x.hours),
+
+  note:"钉钉截图导入"
+
+ }));
+
+
+ const {error}=
+ await db.from("timeoff_records")
+ .insert(rows);
+
+
+ if(error){
+
+  alert("导入失败："+error.message);
+
+  $("confirmImport").disabled=false;
+
+  updateConfirmButton();
+
+  return;
+
+ }
+
+
+ $("confirmImport").disabled=false;
+
+ $("importModal").classList.remove("show");
+
+ await loadCloud();
+
+ toast(
+  `成功导入 ${selected.length} 条记录`
+ );
+
+};
+
+
+/* =========================
+   回到页面自动刷新
+========================= */
+
+document.addEventListener(
+ "visibilitychange",
+ async()=>{
+
+  if(
+   document.visibilityState==="visible" &&
+   user
+  ){
+
+   await loadCloud();
+
+  }
+
+ }
+);
+
+
+/* =========================
+   Auth 状态
+========================= */
+
+db.auth.onAuthStateChange(
+ (event,session)=>{
+
+  if(event==="SIGNED_OUT"){
+
+   showAuth();
+
+  }
+
+ }
+);
+
 
 start();
+
 </script>
+
 </body>
 </html>
